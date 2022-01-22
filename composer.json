@@ -1,0 +1,21 @@
+{
+  "name": "brezgalov/yii2-domain-model",
+  "description": "This package contains classes and interfaces helping you make your code more specific and domain-oriented",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Oleg Brezgalov",
+      "email": "oleg.brezgalov@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.2.0",
+    "yiisoft/yii2": ">=2.0.44"
+  },
+  "autoload": {
+    "psr-4": {
+      "Brezgalov\\DomainModel\\": "src/"
+    }
+  }
+}
