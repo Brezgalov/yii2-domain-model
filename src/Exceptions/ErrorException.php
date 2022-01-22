@@ -10,12 +10,7 @@ class ErrorException extends \Exception
     public $statusCode = 400;
 
     /**
-     * @var string
-     */
-    public $errorName;
-
-    /**
-     * @var string
+     * @var mixed
      */
     public $error;
 
@@ -25,12 +20,27 @@ class ErrorException extends \Exception
      * @param string $errorName
      * @throws ErrorException
      */
-    public static function throwException($error, $statusCode, $errorName = 'error')
+    public static function throw($error, $statusCode)
     {
         $ex = new static();
         $ex->statusCode = $statusCode;
         $ex->error = $error;
-        $ex->errorName = $errorName;
+
+        throw $ex;
+    }
+
+    /**
+     * @param $attribute
+     * @param $error
+     * @throws ErrorException
+     */
+    public static function throwAsModelError($attribute, $error)
+    {
+        $ex = new static();
+        $ex->statusCode = 422;
+        $ex->error = [
+            $attribute => [$error],
+        ];
 
         throw $ex;
     }

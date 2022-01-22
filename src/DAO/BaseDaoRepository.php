@@ -56,11 +56,12 @@ abstract class BaseDaoRepository extends Model implements IDaoRepository
         }
 
         $query->alias($alias);
+        
         return $query;
     }
 
     /**
-     * @return false|ActiveQuery
+     * @return ActiveQuery
      * @throws InvalidConfigException
      */
     public function getQuery()
@@ -68,5 +69,14 @@ abstract class BaseDaoRepository extends Model implements IDaoRepository
         return $this->getBaseQuery(
             $this->getQueryAlias()
         );
+    }
+
+    /**
+     * @param array $data
+     * @return bool
+     */
+    public function registerInput(array $data = [])
+    {
+        return $this->load($data, '');
     }
 }
