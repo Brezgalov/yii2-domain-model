@@ -6,7 +6,7 @@ use Brezgalov\DomainModel\Exceptions\ErrorException;
 use yii\base\Model;
 use yii\web\Response;
 
-class ApiHelpersLibResultFormatter extends Model
+class ModelResultFormatter extends Model
 {
     /**
      * @var string

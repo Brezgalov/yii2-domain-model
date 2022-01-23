@@ -4,7 +4,7 @@ namespace Brezgalov\DomainModel\Services;
 
 use Brezgalov\DomainModel\IDomainModel;
 use Brezgalov\DomainModel\IDomainModelRepository;
-use Brezgalov\DomainModel\ResultFormatters\ApiHelpersLibResultFormatter;
+use Brezgalov\DomainModel\ResultFormatters\ModelResultFormatter;
 use Brezgalov\DomainModel\ResultFormatters\IResultFormatter;
 use Brezgalov\DomainModel\Services\Behaviors\ActionAdapterMutexBehavior;
 use Brezgalov\DomainModel\IUnitOfWork;
@@ -46,7 +46,7 @@ class ActionAdapterService extends Action
     /**
      * @var string|array|IResultFormatter
      */
-    public $resultFormatter = ApiHelpersLibResultFormatter::class;
+    public $resultFormatter = ModelResultFormatter::class;
 
     /**
      * ActionAdapterService constructor.
