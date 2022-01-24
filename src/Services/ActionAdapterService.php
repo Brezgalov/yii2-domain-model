@@ -146,10 +146,12 @@ class ActionAdapterService extends Action
         $this->trigger(self::EVENT_BEFORE_RUN);
 
         $unitOfWork = null;
+        $model = null;
+        $resultFormatter = null;
 
         try {
-            $model = $this->getDomainModel();
             $resultFormatter = $this->getFormatter();
+            $model = $this->getDomainModel();
 
             $unitOfWork = $this->getUnitOfWork();
             $model->linkUnitOfWork($unitOfWork);
@@ -158,7 +160,7 @@ class ActionAdapterService extends Action
             $model->getUnitOfWork()->flush();
         } catch (\Exception $ex) {
             $result = $ex;
-            
+
             if ($unitOfWork) {
                 $model->getUnitOfWork()->die();
             }
