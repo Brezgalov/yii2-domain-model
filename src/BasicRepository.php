@@ -24,7 +24,7 @@ abstract class BasicRepository extends Model implements IDomainModelRepository
         $this->load($data, '');
         
         if (!$this->validate()) {
-            ErrorException::throwException($this->getErrors(), 422);
+            ErrorException::throw($this->getErrors(), 422);
         }
         
         return true;
