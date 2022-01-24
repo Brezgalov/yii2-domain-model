@@ -166,12 +166,12 @@ abstract class BasicDomainModel extends Model implements IDomainModel
         $model = null;
 
         if (is_array($modelConfig) || is_string($modelConfig)) {
-            $model = \Yii::createObject($modelConfig);
+            $modelConfig = \Yii::createObject($modelConfig);
         }
 
         if ($modelConfig instanceof IDomainModelRepository) {
             $modelConfig->registerInput($input);
-            $model = $modelConfig->loadDomainModel();
+            $model = $modelConfig->getDomainModel();
         }
 
         if (!($model instanceof IDomainModel)) {
