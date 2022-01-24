@@ -36,7 +36,7 @@ class ActionAdapterService extends Action
     /**
      * @var string
      */
-    public $modelActionName;
+    public $actionName;
 
     /**
      * @var string|array|IUnitOfWork
@@ -46,7 +46,7 @@ class ActionAdapterService extends Action
     /**
      * @var string|array|IResultFormatter
      */
-    public $resultFormatter;
+    public $formatter;
 
     /**
      * ActionAdapterService constructor.
@@ -128,13 +128,13 @@ class ActionAdapterService extends Action
      * @return IResultFormatter|object
      * @throws \yii\base\InvalidConfigException
      */
-    public function getResultFormatter()
+    public function getFormatter()
     {
-        if ($this->resultFormatter instanceof IResultFormatter) {
-            return $this->resultFormatter;
+        if ($this->formatter instanceof IResultFormatter) {
+            return $this->formatter;
         }
 
-        return $this->resultFormatter ? \Yii::createObject($this->resultFormatter) : null;
+        return $this->formatter ? \Yii::createObject($this->formatter) : null;
     }
 
     /**
@@ -146,13 +146,13 @@ class ActionAdapterService extends Action
         $this->trigger(self::EVENT_BEFORE_RUN);
 
         $model = $this->getDomainModel();
-        $resultFormatter = $this->getResultFormatter();
+        $resultFormatter = $this->getFormatter();
 
         $unitOfWork = $this->getUnitOfWork();
         $model->linkUnitOfWork($unitOfWork);
 
         try {
-            $result = call_user_func([$model, $this->modelActionName]);
+            $result = call_user_func([$model, $this->actionName]);
             $model->getUnitOfWork()->flush();
         } catch (\Exception $ex) {
             $result = $ex;
