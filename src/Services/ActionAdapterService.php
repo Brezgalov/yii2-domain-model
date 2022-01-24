@@ -145,18 +145,23 @@ class ActionAdapterService extends Action
     {
         $this->trigger(self::EVENT_BEFORE_RUN);
 
-        $model = $this->getDomainModel();
-        $resultFormatter = $this->getFormatter();
-
-        $unitOfWork = $this->getUnitOfWork();
-        $model->linkUnitOfWork($unitOfWork);
+        $unitOfWork = null;
 
         try {
+            $model = $this->getDomainModel();
+            $resultFormatter = $this->getFormatter();
+
+            $unitOfWork = $this->getUnitOfWork();
+            $model->linkUnitOfWork($unitOfWork);
+
             $result = call_user_func([$model, $this->actionName]);
             $model->getUnitOfWork()->flush();
         } catch (\Exception $ex) {
             $result = $ex;
-            $model->getUnitOfWork()->die();
+            
+            if ($unitOfWork) {
+                $model->getUnitOfWork()->die();
+            }
         }
 
         $this->trigger(self::EVENT_AFTER_RUN);
