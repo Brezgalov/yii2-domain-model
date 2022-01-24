@@ -257,9 +257,7 @@ DDD после работы с таким проектом - будет знач
          * @throws ErrorException
          */
         public function run()
-        {
-            $this->load($this->input, '');
-    
+        {    
             if (!$this->validate()) {
                 // Способ передачи ошибок может быть любым.
     
