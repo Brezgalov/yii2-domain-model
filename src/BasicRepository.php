@@ -8,12 +8,19 @@ use yii\base\Model;
 abstract class BasicRepository extends Model implements IDomainModelRepository
 {
     /**
+     * @var array
+     */
+    protected $input = [];
+
+    /**
      * @param array $data
      * @return bool
      * @throws ErrorException
      */
     public function registerInput(array $data = [])
     {
+        $this->input = $data;
+
         $this->load($data, '');
         
         if (!$this->validate()) {
@@ -21,5 +28,18 @@ abstract class BasicRepository extends Model implements IDomainModelRepository
         }
         
         return true;
+    }
+
+    /**
+     * @return IDomainModel
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getDomainModel()
+    {
+        $model = $this->loadDomainModel();
+
+        $model->registerInput($this->input);
+
+        return $model;
     }
 }

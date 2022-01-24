@@ -46,7 +46,7 @@ class ActionAdapterService extends Action
     /**
      * @var string|array|IResultFormatter
      */
-    public $resultFormatter = ModelResultFormatter::class;
+    public $resultFormatter;
 
     /**
      * ActionAdapterService constructor.
@@ -92,18 +92,23 @@ class ActionAdapterService extends Action
      */
     public function getDomainModel()
     {
+        $input = $this->getInput();
+
         if ($this->model) {
             if ($this->model instanceof IDomainModel) {
-                return $this->model;
+                $model = $this->model;
             }
 
-            return \Yii::createObject($this->model);
+            $model = \Yii::createObject($this->model);
+            $model->registerInput($input);
+
+            return $model;
         }
 
         $repo = $this->getDomainModelRepository();
-        $repo->registerInput($this->getInput());
+        $repo->registerInput($input);
 
-        return $repo->loadDomainModel();
+        return $repo->getDomainModel();
     }
 
     /**

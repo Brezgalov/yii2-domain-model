@@ -76,6 +76,8 @@ abstract class BasicDomainModel extends Model implements IDomainModel
      */
     public function __call($name, $params)
     {
+        $params = array_merge($this->input, $params);
+
         $action = ArrayHelper::getValue($this->actions(), $name);
 
         if (is_callable($action)) {
