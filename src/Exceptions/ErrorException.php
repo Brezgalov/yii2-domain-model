@@ -1,72 +1,47 @@
 <?php
 
-namespace Brezgalov\DomainModel\ResultFormatters;
+namespace Brezgalov\DomainModel\Exceptions;
 
-use Brezgalov\DomainModel\Exceptions\ErrorException;
-use yii\base\Model;
-use yii\web\Response;
-
-class ModelResultFormatter extends Model
+class ErrorException extends \Exception
 {
     /**
-     * @var string
+     * @var int
      */
-    public $unknownExecutionErrorText = 'Unknown error occurred';
+    public $statusCode = 400;
 
     /**
-     * @var Response
+     * @var mixed
      */
-    public $response;
+    public $error;
 
     /**
-     * ApiHelpersLibResultFormatter constructor.
-     * @param array $config
+     * @param string $error
+     * @param string $statusCode
+     * @param string $errorName
+     * @throws ErrorException
      */
-    public function __construct($config = [])
+    public static function throw($error, $statusCode)
     {
-        parent::__construct($config);
+        $ex = new static();
+        $ex->statusCode = $statusCode;
+        $ex->error = $error;
 
-        if (empty($this->response) && \Yii::$app->has('response')) {
-            $this->response = \Yii::$app->get('response');
-        }
+        throw $ex;
     }
 
     /**
-     * @param $model
-     * @param $result
-     * @return array[]|object|Model|Response|null
-     * @throws \Exception
+     * @param $attribute
+     * @param $error
+     * @throws ErrorException
      */
-    public function format($model, $result)
+    public static function throwAsModelError($attribute, $error)
     {
-        if ($result instanceof ErrorException && $this->response) {
-            $response = clone $this->response;
+        $ex = new static();
+        $ex->statusCode = 422;
+        $ex->error = [
+            $attribute => [$error],
+        ];
 
-            $response->data = $result->error;
-            $response->setStatusCode($result->statusCode);
-
-            return $response;
-        }
-
-        if ($result instanceof \Exception) {
-            throw $result;
-        }
-
-        if ($result === false) {
-            $errorModel = $model;
-
-            if ($errorModel instanceof Model) {
-                if (!$model->hasErrors()) {
-                    $model->addError(static::class, $this->unknownExecutionErrorText);
-                }
-            } else {
-                $errorModel = new Model();
-                $model->addError(static::class, $this->unknownExecutionErrorText);
-            }
-
-            return $errorModel;
-        }
-
-        return $result;
+        throw $ex;
     }
 }

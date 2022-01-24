@@ -39,23 +39,13 @@ class ModelResultFormatter extends Model
      */
     public function format($model, $result)
     {
-        if ($result instanceof ErrorException) {
-            $resultMsg = [
-                [
-                    'field' => $result->errorName,
-                    'message' => $result->error,
-                ],
-            ];
+        if ($result instanceof ErrorException && $this->response) {
+            $response = clone $this->response;
 
-            if ($this->response) {
-                $response = clone $this->response;
-                $response->data = $resultMsg;
-                $response->statusCode = $result->statusCode;
+            $response->data = $result->error;
+            $response->setStatusCode($result->statusCode);
 
-                return $response;
-            }
-
-            return $resultMsg;
+            return $response;
         }
 
         if ($result instanceof \Exception) {
