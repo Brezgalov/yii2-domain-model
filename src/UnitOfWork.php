@@ -74,13 +74,17 @@ class UnitOfWork extends Model implements IUnitOfWork
 
     public function die()
     {
-        $this->trans->rollBack();
+        if ($this->trans) {
+            $this->trans->rollBack();
+        }
     }
 
     public function flush()
     {
-        $this->trans->commit();
-
         $this->eventsStore->fireEvents();
+
+        if ($this->trans) {
+            $this->trans->commit();
+        }
     }
 }
