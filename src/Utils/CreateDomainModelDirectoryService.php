@@ -2,8 +2,8 @@
 
 namespace Brezgalov\DomainModel\Utils;
 
-use Brezgalov\DomainModel\BasicDomainActionModel;
-use Brezgalov\DomainModel\BasicDomainModel;
+use Brezgalov\DomainModel\BaseDomainActionModel;
+use Brezgalov\DomainModel\BaseDomainModel;
 use yii\base\Exception;
 use yii\base\Model;
 use yii\helpers\FileHelper;
@@ -91,7 +91,7 @@ class CreateDomainModelDirectoryService extends Model
         $modelGen->path = $domainPath;
         $modelGen->namespace = $this->baseDomainNamespace . "\\{$this->domainName}";
         $modelGen->modelClass = "{$this->domainName}DM";
-        $modelGen->baseModelClass = BasicDomainModel::class;
+        $modelGen->baseModelClass = BaseDomainModel::class;
 
         $modelGen->generateModelFile();
 
@@ -101,7 +101,7 @@ class CreateDomainModelDirectoryService extends Model
         $actionGen->path = "{$domainPath}/{$this->actionsFolder}";
         $actionGen->namespace = $this->baseDomainNamespace . "\\{$this->domainName}\\{$this->actionsFolder}";
         $actionGen->modelClass = "ExampleDAM";
-        $actionGen->baseModelClass = BasicDomainActionModel::class;
+        $actionGen->baseModelClass = BaseDomainActionModel::class;
 
         $actionGen->generateModelFile();
     }

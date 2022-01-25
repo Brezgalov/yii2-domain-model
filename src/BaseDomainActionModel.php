@@ -4,7 +4,7 @@ namespace Brezgalov\DomainModel;
 
 use yii\base\Model;
 
-abstract class BasicDomainActionModel extends Model implements IDomainActionModel
+abstract class BaseDomainActionModel extends Model implements IDomainActionModel
 {
     /**
      * @var IDomainModel

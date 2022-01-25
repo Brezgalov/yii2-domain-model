@@ -5,7 +5,7 @@ namespace Brezgalov\DomainModel;
 use Brezgalov\DomainModel\Exceptions\ErrorException;
 use yii\base\Model;
 
-abstract class BasicRepository extends Model implements IDomainModelRepository
+abstract class BaseRepository extends Model implements IDomainModelRepository
 {
     /**
      * @var array

@@ -16,7 +16,7 @@ use yii\helpers\ArrayHelper;
  * Provides DelayedEventStorage wrapping
  * @package Brezgalov\DomainModel
  */
-abstract class BasicDomainModel extends Model implements IDomainModel
+abstract class BaseDomainModel extends Model implements IDomainModel
 {
     /**
      * @var array
