@@ -56,6 +56,15 @@ class UnitOfWork extends Model implements IUnitOfWork
         $this->eventsStore->delayEvent($event);
     }
 
+    /**
+     * @param IEvent $event
+     * @param int|string $key
+     */
+    public function delayEventByKey(IEvent $event, $key)
+    {
+        $this->eventsStore->delayEventByKey($event, $key);
+    }
+
     public function ready()
     {
         if (!$this->trans) {

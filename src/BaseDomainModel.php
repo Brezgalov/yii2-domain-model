@@ -150,6 +150,22 @@ abstract class BaseDomainModel extends Model implements IDomainModel
     }
 
     /**
+     * Use this func to delay some code for later use
+     *
+     * @param IEvent $event
+     * @param int|string $key
+     * @throws InvalidConfigException
+     */
+    public function delayEventByKey(IEvent $event, $key)
+    {
+        if (!$this->unitOfWork) {
+            throw new InvalidConfigException('UnitOfWork not defined in domain model ' . static::class);
+        }
+
+        $this->unitOfWork->de($event);
+    }
+
+    /**
      * when you need to create a cross-domain call
      * you should call DomainModel instead of DomainModelAction
      * calling Model with this method allows single UnitOfWork

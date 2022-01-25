@@ -13,6 +13,13 @@ interface IUnitOfWork
     public function delayEvent(IEvent $event);
 
     /**
+     * @param IEvent $event
+     * @param int|string $key
+     * @return void
+     */
+    public function delayEventByKey(IEvent $event, $key);
+
+    /**
      * @return void
      */
     public function ready();

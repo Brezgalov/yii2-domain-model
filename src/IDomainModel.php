@@ -56,9 +56,15 @@ interface IDomainModel
      * allows to delay events inside DomainActionModel
      *
      * @param IEvent $event
-     * @throws InvalidConfigException
      */
     public function delayEvent(IEvent $event);
+
+    /**
+     * allows to delay events inside DomainActionModel
+     *
+     * @param IEvent $event
+     */
+    public function delayEventByKey(IEvent $event, $key);
 
     /**
      * hen you need to create a cross-domain call
