@@ -38,6 +38,20 @@ class DelayedEventsStorage extends Model
     }
 
     /**
+     * Use this func to delay some code for later use
+     *
+     * @param IEvent $event
+     * @param int|string $key
+     * @return $this
+     */
+    public function delayEventByKey(IEvent $event, $key)
+    {
+        $this->events[$key] = $event;
+
+        return $this;
+    }
+
+    /**
      * Use your delayed code
      *
      * @return bool
