@@ -37,6 +37,6 @@ class CrossDomainException extends \Exception
      */
     public function getMessagePrefix()
     {
-        return "[{$this->originDomain}" . ($this->calledDomain ? "-> {$this->calledDomain}" : '') . "]";
+        return "[{$this->originDomain}" . ($this->calledDomain ? " -> {$this->calledDomain}" : '') . "]";
     }
 }
