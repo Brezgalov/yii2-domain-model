@@ -187,32 +187,32 @@ abstract class BaseDomainModel extends Model implements IDomainModel
 
         if ($modelConfig instanceof IDomainModelRepository) {
             $modelConfig->registerInput($input);
-            $model = $modelConfig->getDomainModel();
+            $modelConfig = $modelConfig->getDomainModel();
         }
 
-        if (!($model instanceof IDomainModel)) {
+        if (!($modelConfig instanceof IDomainModel)) {
             CrossDomainException::throwException(static::class, null, "Only Models and Repos can be accessed in cross-domain way");
         }
 
-        $model->registerCrossDomainOrigin(static::class);
+        $modelConfig->registerCrossDomainOrigin(static::class);
 
-        if (!in_array($methodName, $model->crossDomainActionsAllowed())) {
-            CrossDomainException::throwException(static::class, get_class($model), "Method {$methodName} is not allowed for cross-domain access");
+        if (!in_array($methodName, $modelConfig->crossDomainActionsAllowed())) {
+            CrossDomainException::throwException(static::class, get_class($modelConfig), "Method {$methodName} is not allowed for cross-domain access");
         }
 
         /**
          * pass UnitOfWork by ref, so events storage and transaction stays "singltoned"
          */
         if ($this->unitOfWork) {
-            $model->linkUnitOfWork($this->unitOfWork);
+            $modelConfig->linkUnitOfWork($this->unitOfWork);
         }
 
-        $model->registerInput($input);
+        $modelConfig->registerInput($input);
 
-        $result = call_user_func([$model, $methodName]);
+        $result = call_user_func([$modelConfig, $methodName]);
 
         return new CrossDomainCallDto([
-            'model' => $model,
+            'model' => $modelConfig,
             'result' => $result,
         ]);
     }
