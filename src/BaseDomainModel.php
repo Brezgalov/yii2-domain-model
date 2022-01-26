@@ -162,7 +162,7 @@ abstract class BaseDomainModel extends Model implements IDomainModel
             throw new InvalidConfigException('UnitOfWork not defined in domain model ' . static::class);
         }
 
-        $this->unitOfWork->de($event);
+        $this->unitOfWork->delayEventByKey($event, $key);
     }
 
     /**
