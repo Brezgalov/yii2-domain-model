@@ -462,10 +462,18 @@ DDD после работы с таким проектом - будет знач
                 return false;
             }
     
-            $this->model->crossDomainCall(
+            $callResult = $this->model->crossDomainCall(
                 $this->model,
                 UserProfileDM::METHOD_SET_PHONE_CONFIRMED
             );
+    
+            if (!$callResult->result) {
+                /** @var UserProfileDM $calledModel */
+                $calledModel = $callResult->model;
+    
+                $this->model->addErrors($calledModel->getErrors());
+                return false;
+            }
     
             return true;
         }
@@ -517,6 +525,12 @@ DDD после работы с таким проектом - будет знач
         }
 
         if ($modelConfig instanceof IDomainModelRepository) {
+            /**
+             * Если репозиторий передан на прямую - кросс-доменный вызов не должна вносить в него артефакты
+             * Если нет - проще сделать лишний clone, чем плодить if'ы
+             */
+            $modelConfig = clone $modelConfig;
+
             $modelConfig->registerInput($input);
             $modelConfig = $modelConfig->getDomainModel();
         }
@@ -525,6 +539,11 @@ DDD после работы с таким проектом - будет знач
             CrossDomainException::throwException(static::class, null, "Only Models and Repos can be accessed in cross-domain way");
         }
 
+        /**
+         * Если модель передана на прямую - кросс-доменный вызов не должна вносить в нее артефакты
+         * Если нет - проще сделать лишний clone, чем плодить if'ы
+         */
+        $modelConfig = clone $modelConfig;
         $modelConfig->registerCrossDomainOrigin(static::class);
 
         if (!in_array($methodName, $modelConfig->crossDomainActionsAllowed())) {

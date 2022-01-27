@@ -186,6 +186,12 @@ abstract class BaseDomainModel extends Model implements IDomainModel
         }
 
         if ($modelConfig instanceof IDomainModelRepository) {
+            /**
+             * Если репозиторий передан на прямую - кросс-доменный вызов не должна вносить в него артефакты
+             * Если нет - проще сделать лишний clone, чем плодить if'ы
+             */
+            $modelConfig = clone $modelConfig;
+
             $modelConfig->registerInput($input);
             $modelConfig = $modelConfig->getDomainModel();
         }
@@ -194,6 +200,11 @@ abstract class BaseDomainModel extends Model implements IDomainModel
             CrossDomainException::throwException(static::class, null, "Only Models and Repos can be accessed in cross-domain way");
         }
 
+        /**
+         * Если модель передана на прямую - кросс-доменный вызов не должна вносить в нее артефакты
+         * Если нет - проще сделать лишний clone, чем плодить if'ы
+         */
+        $modelConfig = clone $modelConfig;
         $modelConfig->registerCrossDomainOrigin(static::class);
 
         if (!in_array($methodName, $modelConfig->crossDomainActionsAllowed())) {
