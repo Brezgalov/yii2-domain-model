@@ -508,6 +508,27 @@ DDD после работы с таким проектом - будет знач
 Это позволяет вам проверить в методе **BasicDomainModel::crossDomainActionsAllowed()**, 
 из какой модели вызывается процесс и в какая была последовательность обращений к моделям.
 
+    /**
+    * @return array|mixed
+    * @throws \Exception
+    */
+    public function crossDomainActionsAllowed()
+    {
+        $firstParent = ArrayHelper::getValue($this->crossDomainOrigin, 0);
+
+        return ArrayHelper::getValue([
+            // Методы доступные только внутри другой модели
+            SomeOtherDM::class => [
+                UserProfileDM::METHOD_SUBMIT_PHONE_CONFIRM,
+            ],
+        
+            // Методы доступные себе внутри себя
+            UserProfileDM::class => [
+                UserProfileDM::METHOD_SET_PHONE_CONFIRMED,
+            ],
+        ], $firstParent, []);
+    }
+
 > Таким образом в **crossDomainActionsAllowed** мы увидим подробное описание того какие методы и откуда можно вызывать
 
 Так же модели получают общий **UnitOfWork**. Это позволяет иметь единое хранилище для
@@ -566,3 +587,6 @@ DDD после работы с таким проектом - будет знач
             'result' => $result,
         ]);
     }
+
+> Я приложил часть проекта, на котором внедрялся такой подход, в папке **example**. 
+> Там вы сможете более подробно рассмотреть примеры кода модели **UserProfileDM**
