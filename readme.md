@@ -24,8 +24,7 @@ DDD после работы с таким проектом - будет знач
 ### Модель
 
 Чтобы было проще начнем знакомство на примере. 
-Допустим мы хотим реализовать подтверждение телефона пользователя. 
-Мы знаем что у пользователя есть телефон и должна быть отметка о том, что телефон подтвержден.
+Допустим мы хотим реализовать сохранение отметки о подтверждении телефона пользователя. 
 
 Следуя DDD мы должны были бы создать модель **Пользователь** такого вида:
 
@@ -35,11 +34,6 @@ DDD после работы с таким проектом - будет знач
          * @var integer
          */
         public $id;
-
-        /**
-        * @var string
-        */
-        public $phone;
     
         /**
          * @var string
@@ -49,7 +43,7 @@ DDD после работы с таким проектом - будет знач
 
 На практике, прописывать перенос полей из БД в модель и обратно - довольно затратная по человеко-часам операция. 
 Следование DDD в этом аспекте увеличит срок разработки и бизнес будет недоволен.
-Я предлагаю пойти на компромис и оборачивать один или несколько DAO в модели, если это возможно.
+Я предлагаю пойти на компромисс и оборачивать один или несколько DAO в модели, если это возможно.
 
 >*Поля модели оставляю публичными, опять же для упрощения. 
 Я полагаю, что программисты не будут использовать эти поля "не правильно", потому что такой код
@@ -69,7 +63,7 @@ DDD после работы с таким проектом - будет знач
 Нам понадобится способ наполнить модель данными. 
 Создадим для этого класс-репозиторий. 
 
-    class UserProfileDMRepository extends BasicRepository implements IDomainModelRepository
+    class UserProfileDMRepository extends BasicRepository
     {
         /**
         * @var integer
@@ -95,6 +89,7 @@ DDD после работы с таким проектом - будет знач
         }
     
         /**
+         * Входные параметры запроса попадут в load через метод registerInput базового класса
          * @return array[]
          */
         public function rules()
@@ -132,7 +127,7 @@ DDD после работы с таким проектом - будет знач
 
 ### Логика
 
-Теперь мы хотим реализовать подтверждение телефона. Можно просто:
+Теперь мы хотим реализовать сохранение отметки о подтверждении телефона. Можно просто:
 
     class UserProfileDM extends BasicDomainModel
     {
@@ -144,18 +139,23 @@ DDD после работы с таким проектом - будет знач
         /**
          * @return UsersDao
          */
-        public function submitPhone()
+        public function setPhoneConfirmed()
         {
-            // Сюда получим входные данные для операции от контроллера
-            $inputParams = $this->input;
-    
-            // ... - логика подтверждения телефона
+            $this->user->phone_confirmed_mark = true;
+
+            if (!$this->user->save()) {
+                // обработка ошибки
+            }
     
             return $this->user;
         }
     }
 
-Но тогда наша модель **Профиль** становится крупнее с каждым новым действием,
+> В нарушение DDD я сохранил изменения в DAO непосредственно в методе **run**.
+> Это сократит сложность кода и понизит порог вхождения.
+> Целостность данных мы сохраним с помощью миграции. См. подробнее в секции **UnitOfWork**
+
+Но теперь наша модель **Профиль** будет становится крупнее с каждым новым действием,
 это моет привести к тому, что она со временем будет перегружена кодом, 
 а сами методы модели начнут проникать в друг друга через прямые вызовы или 
 *protected* методы.
@@ -164,11 +164,10 @@ DDD после работы с таким проектом - будет знач
 
 Для этого опишем его отдельно:
 
-    class SubmitPhoneDAM extends BasicDomainActionModel
+    class SetPhoneConfirmedDAM extends BasicDomainActionModel
     {
         public function run()
         {
-            $inputParams = $this->input;
     
             // ...
     
@@ -180,7 +179,7 @@ DDD после работы с таким проектом - будет знач
 
     class UserProfileDM extends BasicDomainModel
     {
-        const METHOD_SUBMIT_PHONE = 'submitPhone';
+        const METHOD_SET_PHONE_CONFIRMED = 'setPhoneConfirmed';
     
         /**
          * @var UsersDao
@@ -194,11 +193,10 @@ DDD после работы с таким проектом - будет знач
         {
             return [
                 /**
-                 * Метод подтверждения телефона
                  * Тут мы задокументируем все особенности метода и
                  * коротко опишем что делаем
                  */
-                static::METHOD_SUBMIT_PHONE => SubmitPhoneDAM::class,
+                static::METHOD_SET_PHONE_CONFIRMED => SetPhoneConfirmedDAM::class,
             ];
         }
     }
@@ -206,94 +204,33 @@ DDD после работы с таким проектом - будет знач
 Попробуем немного углубить логику, чтобы лучше понять возможности 
 **BasicDomainActionModel** и предполагаемый способ взаимодействия.
 
-    class SubmitPhoneDAM extends BasicDomainActionModel
+    class SetPhoneConfirmedDAM extends BasicDomainActionModel
     {
         /**
-        * @var UserProfileDM
-        */
+         * @var UserProfileDM
+         */
         protected $model;
     
         /**
-         * @var string
-         */
-        public $phone;
-    
-        /**
-         * @var string
-         */
-        public $submit_code;
-    
-        /**
-         * @var SmsCodesDaoRepository
-         */
-        public $smsCodesRepo;
-    
-        /**
-         * SubmitPhoneDAM constructor.
-         * @param IDomainModel $model
-         * @param array $config
-         */
-        public function __construct(IDomainModel $model, $config = [])
-        {
-            parent::__construct($model, $config);
-    
-            if (empty($this->smsCodesRepo)) {
-                $this->smsCodesRepo = new SmsCodesDaoRepository();
-            }
-        }
-    
-        /**
-         * @return array[]
-         */
-        public function rules()
-        {
-            return [
-                [['phone', 'submit_code'], 'required'],
-            ];
-        }
-    
-        /**
-         * @return $this|mixed
-         * @throws ErrorException
+         * @return bool
          */
         public function run()
-        {    
-            if (!$this->validate()) {
-                // Способ передачи ошибок может быть любым.
-    
-                // Можно выбросить exception
-                ErrorException::throw('Validation error', 422);
-    
-                // Можно вернуть саму модель действия с ошибками внутри
-                return $this;
-    
-                // В любом случае обработка и форматирование ответа зависят от вас
-                // и происходят уже после выполнения логики
+        {
+            if (empty($this->model->user->phone)) {
+                $this->model->addError('phone', 'Необходимо указать телефон в профиле, прежде чем его подтверждать');
+                return false;
             }
     
-            if ($this->model->user->phone != PhoneHelper::clearPhone($this->phone)) {
-                ErrorException::throwAsModelError('phone', 'Телефон указанный для подтверждения не соответствует номеру из профиля');
-            }
-    
-            $smsRepo = clone $this->smsCodesRepo;
-            $smsRepo->code = $this->submit_code;
-            $smsRepo->for_phone = PhoneHelper::clearPhone($this->phone);
-    
-            if (!$smsRepo->getQuery()->exists()) {
-                ErrorException::throwAsModelError('submit_code', 'Sms-код устарел или указан неверно');
+            if ($this->model->user->phone_confirmed_mark) {
+                $this->model->addError('phone', 'Ваш номер телефона уже подтвержден');
+                return false;
             }
     
             $this->model->user->phone_confirmed_mark = date('Y-m-d H:i:s');
     
-            /**
-             * Использование save в модели так же нарушет DDD
-             * Это компромисс для упрощения работы. Подробнее про это в UnitOfWork
-             */
-            if (!$this->model->user->save()) {
-                ErrorException::throwAsModelError('phone', 'Произошли ошибки при сохранении');
-            }
+            $this->model->delayEventByKey(new StoreModelEvent($this->model), UserProfileDM::EVENT_STORE_MODEL);
     
-            return $this->user;
+            return true;
         }
     }
 
@@ -301,13 +238,13 @@ DDD после работы с таким проектом - будет знач
 
 > **BasicDomainActionModel** это **\yii\base\Model**, поэтому вы можете использовать встроенные механизмы **load** и **validate**
 
-> В нарушение DDD я предлагаю сохранять изменения в DAO непосредственно в методе **run**. 
-> Это сократит сложность кода и понизит порог вхождения. 
-> Целостность данных мы сохраним с помощью миграции. См. подробнее в **UnitOfWork** 
+> Здесь я уже реализовал сохранение пользователя через **отложенное событие**. Дело в том, что я планирую использовать
+> этот метод внутри других методов модели **UserProfileDM**. Поэтому я не хочу чтобы модель юзера сохранялась несколько раз подряд.
+> Событие с ключем позволит обновить модель до актуального состояния за один вызов **save()**.
 
 ### Сервис (Подключение к контроллеру)
 
-Задача сервисов по DDD, как я ее вижу - передача входных данных в модели и ответа модели обратно.
+Задача сервисов по DDD - передача входных данных в модели и ответа модели обратно.
 Если представить, что один запрос к модели = одно действие (метод), то сервис можно стандартизировать
 и привести к общему виду. 
 
@@ -402,29 +339,211 @@ DDD после работы с таким проектом - будет знач
 помощью **UnitOfWork::delayEvent**. Этот метод будет доступен как внутри доменной модели, так и 
 внутри доменных процессов, через обращение к ней.
 
-> тут обязательно будет пример кода
+Чуть выше мы уже использовали вызов регистрации отложенного события. 
+Вот так выглядит реализация события сохранения пользователя:
+
+    class StoreModelEvent extends Model implements IEvent
+    {
+        /**
+        * @var UserProfileDM
+        */
+        protected $model;
+    
+        /**
+         * StoreModelEvent constructor.
+         * @param UserProfileDM $model
+         * @param array $config
+         */
+        public function __construct(UserProfileDM $model, $config = [])
+        {
+            $this->model = $model;
+    
+            parent::__construct($config);
+        }
+    
+        /**
+         * @return bool|void
+         * @throws Exception
+         */
+        public function run()
+        {
+            if (!$this->model->user->save()) {
+                throw new Exception('Не удается сохранить модель пользователя');
+            }
+        }
+    }
+
+>События реализуют метод **run()**, через интерфейс **IEvent**.  
+
+>Событие будет вызвано в пределах основной миграции **UnitOfWork**, поэтому в случае чего
+>исключение отменит все изменения других событий меняющих бд.
+
+>Здесь мы можем вызывать не только сохранение, но и отправку смс, почты и т.п.
 
 ### Кросс-доменное взаимодействие
 
-Представим себе случай, что существует такой процесс на предприятии, в ходе которого требуется подтвердить 
-номер телефона пользователя, но иначе. По факту для процесса подтверждения меняется только интерфейс и
-добавляются действия до- и после- подтверждения. Логично было бы реиспользовать существующий класс 
-доменного процесса **SubmitPhoneDAM** и включить его в новой доменной модели через обертку.
+Мы реализовали сохранение отметки о том, что телефон пользователя подтвержден. 
+Теперь нас просят реализовать простановку этой отметки в случае получения смс-кода подтверждения.
 
-> тут тоже надо бы пример кода
+Попробуем реализовать такой процесс
 
-Проблема такого подхода заключается в том, что мы теряем явность обращения к модели **UserProfile**. Она 
-как будто остается где-то сбоку и уже совсем не нужна. Это может привести к появлению артефактов и неизбежно 
-ведет к запутанности. Я предлагаю договориться между собой и запретить такие действия. 
+    class SubmitConfirmPhoneDAM extends BaseDomainActionModel
+    {
+        /**
+        * @var UserProfileDM
+        */
+        protected $model;
+    
+        /**
+         * @var string
+         */
+        public $phone;
+    
+        /**
+         * @var string
+         */
+        public $code;
+    
+        /**
+         * @var SmsCodesDaoRepository
+         */
+        public $smsCodesRepo;
+    
+        /**
+         * SubmitPhoneDAM constructor.
+         * @param IDomainModel $model
+         * @param array $config
+         */
+        public function __construct(IDomainModel $model, $config = [])
+        {
+            parent::__construct($model, $config);
+    
+            if (empty($this->smsCodesRepo)) {
+                $this->smsCodesRepo = new SmsCodesDaoRepository();
+            }
+        }
+    
+        /**
+         * @return array[]
+         */
+        public function rules()
+        {
+            return [
+                [['code', 'phone'], 'required'],
+            ];
+        }
+    
+        /**
+         * @return $this|mixed
+         * @throws ErrorException
+         */
+        public function run()
+        {
+            if (!$this->validate()) {
+                $this->model->addErrors($this->getErrors());
+                return false;
+            }
+    
+            $phone = PhoneHelper::clearPhone($this->phone);
+    
+            if ($this->model->user->phone !== $phone) {
+                $this->model->addError('phone', "Телефон \"{$this->phone}\" не привязан к вашему профилю");
+                return false;
+            }
+    
+            $smsCodesRepo = clone $this->smsCodesRepo;
+            $smsCodesRepo->code = $this->code;
+            $smsCodesRepo->for_phone = $phone;
+    
+            $isValidCode = $smsCodesRepo->getQuery()->exists();
+    
+            if (!$isValidCode || !$phone) {
+                $this->model->addError('code', 'Неверный код');
+                return false;
+            }
+    
+            $this->model->crossDomainCall(
+                $this->model,
+                UserProfileDM::METHOD_SET_PHONE_CONFIRMED
+            );
+    
+            return true;
+        }
+    }
 
-Вместо это, я предлагаю использовать функцию **BasicDomainModel::crossDomainCall**. Она принимает модель,
-название метода который необходимо использовать и входные параметры. При этом таким образом могут быть 
-вызваны только методы, специально отмеченные для кросс-доменного взаимодействия, 
-через **BasicDomainModel::crossDomainActionsAllowed**. 
+> На входе процесс получает от контроллера номер телефона и код смс
 
-Перед вызовом модели в качестве под-домена, эта модель получает запись о том какая модель ее вызвала 
-в массив **BasicDomainModel::$crossDomainOrigin**. Этот массив может быть использован для указания методов
-разрешенных к крос-доменному взаимодействию для одной конкретной модели
+> После выполнения всех проверок мы проставляем отметку о подтверждении через **$this->model->crossDomainCall()** 
 
-> И сюда нужен код для примера
+Минуточку. У нас ведь реализован класс для процесса простановки отметки. 
+Почему бы нам инстанцировать его, передав внутрь текущую модель профиля и не
+вызвать напрямую? 
+Зачем нужен странный и не понятный нам метод для вызова этого процесса?
 
+Если бы начнем инстанцировать процессы внутри процессов напрямую, то спустя
+некоторое время вернувшись в код мы не сможем точно сказать по нашей модели, какие
+процессы в ней внутренние, какие наружные. Единственный способ разобраться в таком случае -
+читать непосредственно все реализации процессов.
+
+>Более того, процесс из одной модели может быть использован в другой, тогда найти все связи 
+будет гораздо труднее.
+
+Я предлагаю договориться между собой и запретить такие действия. 
+Вместо это, я предлагаю использовать функцию **BasicDomainModel::crossDomainCall**. 
+Она принимает модель (или репозиторий), название метода который необходимо использовать и входные параметры. 
+
+Для того, чтобы метод стал доступен для вызова через эту функцию, 
+необходимо явно указать его в списке, получаемом через **BasicDomainModel::crossDomainActionsAllowed**.
+
+При вызове этого метода в модели, которая совершает кросс-доменное действие, в конец массива **BasicDomainModel::$crossDomainOrigin**
+проставляется отметка о модели совершившей вызов. см **registerCrossDomainOrigin**
+Это позволяет вам проверить в методе **BasicDomainModel::crossDomainActionsAllowed()**, 
+из какой модели вызывается процесс и в какая была последовательность обращений к моделям.
+
+> Таким образом в **crossDomainActionsAllowed** мы увидим подробное описание того какие методы и откуда можно вызывать
+
+Так же модели получают общий **UnitOfWork**. Это позволяет иметь единое хранилище для
+отложенных событий между всеми моделями. см **linkUnitOfWork**
+
+Метод возвращает не только результат процесса, но и модель, которая его совершала.
+см **CrossDomainCallDto**
+
+    public function crossDomainCall($modelConfig, string $methodName, array $input = [])
+    {
+        $model = null;
+
+        if (is_array($modelConfig) || is_string($modelConfig)) {
+            $modelConfig = \Yii::createObject($modelConfig);
+        }
+
+        if ($modelConfig instanceof IDomainModelRepository) {
+            $modelConfig->registerInput($input);
+            $modelConfig = $modelConfig->getDomainModel();
+        }
+
+        if (!($modelConfig instanceof IDomainModel)) {
+            CrossDomainException::throwException(static::class, null, "Only Models and Repos can be accessed in cross-domain way");
+        }
+
+        $modelConfig->registerCrossDomainOrigin(static::class);
+
+        if (!in_array($methodName, $modelConfig->crossDomainActionsAllowed())) {
+            CrossDomainException::throwException(static::class, get_class($modelConfig), "Method {$methodName} is not allowed for cross-domain access");
+        }
+
+        /**
+         * pass UnitOfWork by ref, so events storage and transaction stays "singltoned"
+         */
+        if ($this->unitOfWork) {
+            $modelConfig->linkUnitOfWork($this->unitOfWork);
+        }
+
+        $modelConfig->registerInput($input);
+
+        $result = call_user_func([$modelConfig, $methodName]);
+
+        return new CrossDomainCallDto([
+            'model' => $modelConfig,
+            'result' => $result,
+        ]);
+    }
