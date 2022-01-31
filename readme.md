@@ -514,7 +514,8 @@ DDD после работы с таким проектом - будет знач
     */
     public function crossDomainActionsAllowed()
     {
-        $firstParent = ArrayHelper::getValue($this->crossDomainOrigin, 0);
+        $domainOrigins = $this->crossDomainOrigin;
+        $lastParent = array_pop($domainOrigins);
 
         return ArrayHelper::getValue([
             // Методы доступные только внутри другой модели
@@ -526,7 +527,7 @@ DDD после работы с таким проектом - будет знач
             UserProfileDM::class => [
                 UserProfileDM::METHOD_SET_PHONE_CONFIRMED,
             ],
-        ], $firstParent, []);
+        ], $lastParent, []);
     }
 
 > Таким образом в **crossDomainActionsAllowed** мы увидим подробное описание того какие методы и откуда можно вызывать
