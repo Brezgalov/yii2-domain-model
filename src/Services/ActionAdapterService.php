@@ -156,7 +156,7 @@ class ActionAdapterService extends Action
             $unitOfWork = $this->getUnitOfWork();
             $model->linkUnitOfWork($unitOfWork);
 
-            $result = call_user_func([$model, $this->actionName]);
+            $result = $model->call($this->actionName);
 
             if ($result === false) {
                 $model->getUnitOfWork()->die();

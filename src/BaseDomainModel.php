@@ -69,19 +69,18 @@ abstract class BaseDomainModel extends Model implements IDomainModel
     }
 
     /**
-     * @param string $name
-     * @param array $params
-     * @return false|mixed
-     * @throws InvalidConfigException
+     * Вызывает экшен модели
+     *
+     * @param $actionName
+     * @param array $input
+     * @return false|mixed|void
      */
-    public function __call($name, $params)
+    public function call($actionName, array $input = [])
     {
-        $params = array_merge($this->input, $params);
-
-        $action = ArrayHelper::getValue($this->actions(), $name);
+        $action = ArrayHelper::getValue($this->actions(), $actionName);
 
         if (is_callable($action)) {
-            return call_user_func($action, ...$params);
+            return call_user_func($action, $input);
         }
 
         if (is_string($action) || is_array($action)) {
@@ -89,11 +88,11 @@ abstract class BaseDomainModel extends Model implements IDomainModel
         }
 
         if ($action instanceof IDomainActionModel) {
-            $action->registerInput($params);
+            $action->registerInput($input);
             return $action->run();
         }
 
-        return parent::__call($name, $params);
+        return;
     }
 
     /**
@@ -218,9 +217,7 @@ abstract class BaseDomainModel extends Model implements IDomainModel
             $modelConfig->linkUnitOfWork($this->unitOfWork);
         }
 
-        $modelConfig->registerInput($input);
-
-        $result = call_user_func([$modelConfig, $methodName]);
+        $result = $modelConfig->call($methodName, $input);
 
         return new CrossDomainCallDto([
             'model' => $modelConfig,

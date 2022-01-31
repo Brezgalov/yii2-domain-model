@@ -38,6 +38,15 @@ interface IDomainModel
     public function getCrossDomainOrigin();
 
     /**
+     * Вызывает экшен модели
+     *
+     * @param $actionName
+     * @param array $input
+     * @return false|mixed|void
+     */
+    public function call($actionName, array $input = []);
+
+    /**
      * @return array
      */
     public function getInput();
