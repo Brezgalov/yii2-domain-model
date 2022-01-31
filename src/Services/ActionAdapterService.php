@@ -157,7 +157,12 @@ class ActionAdapterService extends Action
             $model->linkUnitOfWork($unitOfWork);
 
             $result = call_user_func([$model, $this->actionName]);
-            $model->getUnitOfWork()->flush();
+
+            if ($result === false) {
+                $model->getUnitOfWork()->die();
+            } else {
+                $model->getUnitOfWork()->flush();
+            }
         } catch (\Exception $ex) {
             $result = $ex;
 

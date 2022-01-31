@@ -74,6 +74,8 @@ class UnitOfWork extends Model implements IUnitOfWork
 
     public function die()
     {
+        $this->eventsStore->clearEvents();
+
         if ($this->trans) {
             $this->trans->rollBack();
         }
