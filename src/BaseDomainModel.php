@@ -88,7 +88,7 @@ abstract class BaseDomainModel extends Model implements IDomainModel
         }
 
         if ($action instanceof IDomainActionModel) {
-            $action->registerInput($input);
+            $action->registerInput(array_merge($this->input, $input));
             return $action->run();
         }
 
