@@ -81,7 +81,7 @@ class RequestConfirmPhoneDAM extends BaseDomainActionModel
                 $phoneInput == $this->model->user->phone;
 
             if ($alreadyConfirmed) {
-                $this->model->addError('phone', 'Данный номер телефона уже подтвержден');
+                $this->model->addError('phone', UserProfileDM::ERROR_ALREADY_CONFIRMED);
                 return false;
             }
 

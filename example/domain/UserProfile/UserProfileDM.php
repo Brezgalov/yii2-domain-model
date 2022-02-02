@@ -5,7 +5,6 @@ namespace app\domain\UserProfile;
 use app\dao\models\UsersDao;
 use app\domain\DriverSelfArrival\DriverSelfArrivalDM;
 use app\domain\UserProfile\DomainActions\RequestConfirmPhoneDAM;
-use app\domain\UserProfile\DomainActions\SendSmsCodeDAM;
 use app\domain\UserProfile\DomainActions\SetPhoneConfirmedDAM;
 use app\domain\UserProfile\DomainActions\SubmitConfirmPhoneDAM;
 use app\domain\UserProfile\DomainActions\UpdateProfileDAM;
@@ -21,10 +20,20 @@ class UserProfileDM extends BaseDomainModel
 
     const EVENT_STORE_MODEL = 'storeModel';
 
+    const ERROR_ALREADY_CONFIRMED = 'Данный номер телефона уже подтвержден';
+
     /**
      * @var UsersDao
      */
     public $user;
+
+    /**
+     * @return bool
+     */
+    public function isValid()
+    {
+        return $this->user && $this->user->validate();
+    }
 
     /**
      * @return array
@@ -34,24 +43,23 @@ class UserProfileDM extends BaseDomainModel
         return [
             /**
              * Метод запроса кода и отправки смс с кодом на номер пользователя
-             * Принимает
              */
             static::METHOD_REQUEST_PHONE_CONFIRM => RequestConfirmPhoneDAM::class,
 
             /**
-             * Метод подтверждения телефона
-             * Тут мы задокументируем все особенности метода и
-             * коротко опишем что делаем
+             * Метод подтверждения телефона, принимает код из смс и номер пользователя,
+             * который подтверждается
              */
             static::METHOD_SUBMIT_PHONE_CONFIRM => SubmitConfirmPhoneDAM::class,
 
             /**
-             * Проставляем отметку, что телефон подтвержден
+             * Проставляем отметку, что телефон подтвержден. Утилитарная штука, обновляет профиль
              */
             static::METHOD_SET_PHONE_CONFIRMED => SetPhoneConfirmedDAM::class,
 
             /**
-             * Обновление профиля
+             * Обновление профиля по полям
+             * Изменение телефона - сбрасывает отметку, что номер подтвержден
              */
             static::METHOD_UPDATE_PROFILE => UpdateProfileDAM::class,
         ];
@@ -63,7 +71,8 @@ class UserProfileDM extends BaseDomainModel
      */
     public function crossDomainActionsAllowed()
     {
-        $firstParent = ArrayHelper::getValue($this->crossDomainOrigin, 0);
+        $domainOrigins = $this->crossDomainOrigin;
+        $lastParent = array_pop($domainOrigins);
 
         return ArrayHelper::getValue([
             // Используется при прибытии водителя
@@ -73,8 +82,8 @@ class UserProfileDM extends BaseDomainModel
 
             // Для внутреннего использования
             UserProfileDM::class => [
-                static::METHOD_SET_PHONE_CONFIRMED,
+                UserProfileDM::METHOD_SET_PHONE_CONFIRMED,
             ],
-        ], $firstParent, []);
+        ], $lastParent, []);
     }
 }
