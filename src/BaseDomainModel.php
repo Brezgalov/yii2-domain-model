@@ -92,7 +92,7 @@ abstract class BaseDomainModel extends Model implements IDomainModel
             return $action->run();
         }
 
-        return;
+        throw new InvalidCallException('Action not found');
     }
 
     /**
