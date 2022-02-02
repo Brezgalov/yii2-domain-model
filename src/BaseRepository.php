@@ -4,6 +4,7 @@ namespace Brezgalov\DomainModel;
 
 use Brezgalov\DomainModel\Exceptions\ErrorException;
 use yii\base\Model;
+use yii\base\InvalidConfigException;
 
 abstract class BaseRepository extends Model implements IDomainModelRepository
 {
@@ -39,6 +40,10 @@ abstract class BaseRepository extends Model implements IDomainModelRepository
         $model = $this->loadDomainModel();
 
         $model->registerInput($this->input);
+
+        if (!$model->isValid()) {
+            throw new InvalidConfigException("Model loaded in failed state");
+        }
 
         return $model;
     }

@@ -107,6 +107,15 @@ abstract class BaseDomainModel extends Model implements IDomainModel
     }
 
     /**
+     * Проверка состояния модели
+     * @return bool
+     */
+    public function isValid()
+    {
+        return true;
+    }
+
+    /**
      * @return array
      */
     public function getInput()

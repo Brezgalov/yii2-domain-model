@@ -52,6 +52,12 @@ interface IDomainModel
     public function getInput();
 
     /**
+     * Проверка состояния модели
+     * @return bool
+     */
+    public function isValid();
+
+    /**
      * @param IUnitOfWork $unitOfWork
      */
     public function linkUnitOfWork(IUnitOfWork $unitOfWork);
