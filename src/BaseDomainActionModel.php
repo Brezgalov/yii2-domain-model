@@ -2,6 +2,7 @@
 
 namespace Brezgalov\DomainModel;
 
+use Brezgalov\DomainModel\Exceptions\ErrorException;
 use yii\base\Model;
 
 abstract class BaseDomainActionModel extends Model implements IDomainActionModel
@@ -32,6 +33,10 @@ abstract class BaseDomainActionModel extends Model implements IDomainActionModel
     public function registerInput(array $data = [])
     {
         parent::load($data, '');
+
+        if (!$this->validate()) {
+            ErrorException::throw($this->getErrors(), 422);
+        }
     }
 
     /**
