@@ -2,9 +2,10 @@
 
 namespace Brezgalov\DomainModel\Services;
 
+use yii\base\InvalidCallException;
+use Brezgalov\DomainModel\Exceptions\ErrorException;
 use Brezgalov\DomainModel\IDomainModel;
 use Brezgalov\DomainModel\IDomainModelRepository;
-use Brezgalov\DomainModel\ResultFormatters\ModelResultFormatter;
 use Brezgalov\DomainModel\ResultFormatters\IResultFormatter;
 use Brezgalov\DomainModel\Services\Behaviors\ActionAdapterMutexBehavior;
 use Brezgalov\DomainModel\IUnitOfWork;
@@ -95,11 +96,7 @@ class ActionAdapterService extends Action
         $input = $this->getInput();
 
         if ($this->model) {
-            if ($this->model instanceof IDomainModel) {
-                $model = $this->model;
-            }
-
-            $model = \Yii::createObject($this->model);
+            $model = $this->model instanceof IDomainModel ? $this->model : \Yii::createObject($this->model);
             $model->registerInput($input);
 
             return $model;
@@ -157,6 +154,9 @@ class ActionAdapterService extends Action
             $model->linkUnitOfWork($unitOfWork);
 
             $result = $model->call($this->actionName);
+            if (!$model->isValid()) {
+                throw new InvalidCallException('Action lead to invalid state');
+            }
 
             if ($result === false) {
                 $model->getUnitOfWork()->die();
