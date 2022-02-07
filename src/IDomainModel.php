@@ -94,4 +94,9 @@ interface IDomainModel
      * @throws InvalidConfigException
      */
     public function crossDomainCall($modelConfig, string $methodName, array $params = []);
+
+    /**
+     * @return bool
+     */
+    public function canInitWithoutRepo();
 }

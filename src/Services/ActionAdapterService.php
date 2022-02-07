@@ -11,6 +11,7 @@ use Brezgalov\DomainModel\Services\Behaviors\ActionAdapterMutexBehavior;
 use Brezgalov\DomainModel\IUnitOfWork;
 use Brezgalov\DomainModel\UnitOfWork;
 use yii\base\Action;
+use yii\base\InvalidConfigException;
 
 class ActionAdapterService extends Action
 {
@@ -97,6 +98,11 @@ class ActionAdapterService extends Action
 
         if ($this->model) {
             $model = $this->model instanceof IDomainModel ? $this->model : \Yii::createObject($this->model);
+
+            if (!$model->canInitWithoutRepo()) {
+                throw new InvalidCallException('Model ' . get_class($model) . ' can not be loaded without Repo');
+            }
+
             $model->registerInput($input);
 
             return $model;
@@ -149,6 +155,10 @@ class ActionAdapterService extends Action
         try {
             $resultFormatter = $this->getFormatter();
             $model = $this->getDomainModel();
+
+            if (!$model->isValid()) {
+                throw new InvalidConfigException("Model loaded in failed state");
+            }
 
             $unitOfWork = $this->getUnitOfWork();
             $model->linkUnitOfWork($unitOfWork);

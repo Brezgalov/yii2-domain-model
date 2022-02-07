@@ -76,27 +76,29 @@ DDD после работы с таким проектом - будет знач
         return $this->user && $this->user->validate();
     }
 
-> Этот метод вызывается в базовом репозитории после загрузки модели.
+> Этот метод вызывается в базовом сервисе после загрузки модели.
 > При получении отрицательного ответа от метода - выбрасывается исключение
 
-Проверка валидности модели в репоизтории:
-
-    /**
-     * @return IDomainModel
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function getDomainModel()
+    class ActionAdapterService extends Action
     {
-        $model = $this->loadDomainModel();
+        ...
+
+        public function run()
+        {
+            ...
+
+            try {
+                $resultFormatter = $this->getFormatter();
+                $model = $this->getDomainModel();
     
-        $model->registerInput($this->input);
-    
-        if (!$model->isValid()) {
-            throw new InvalidConfigException("Model loaded in failed state");
+                if (!$model->isValid()) {
+                    throw new InvalidConfigException("Model loaded in failed state");
+                }
+
+            ...
         }
-    
-        return $model;
     }
+
 
 ### Репозиторий (чтение)
 
@@ -312,11 +314,6 @@ DDD после работы с таким проектом - будет знач
         }
     }
 
-> Если вдруг по какой-то причине наша модель не имеет в себе данных 
-> или мы осознанно превращаем модель в фасад группирующий методы - использование 
-> репозитория будет не оправданным усложнением. В таких случаях модель 
-> можно передать напрямую через поле **ActionAdapterService::model**
-
 > **ActionAdapterService** по умолчанию использует **ActionAdapterMutexBehavior**.
 > Это поведение заворачивает Action в Mutex для каждого отдельного клиента. Это
 > необходимо на случай, если клиент отправит одновременно несколько запросов, которые
@@ -369,6 +366,33 @@ DDD после работы с таким проектом - будет знач
 и интерфейс **IResultFormatter** для реализации конкретных классов.
 
 ## Продвинутые практики
+
+### Передача модели в сервис напрямую
+
+Если вдруг по какой-то причине наша модель не имеет в себе данных
+или мы осознанно превращаем модель в фасад группирующий методы - использование
+репозитория будет не оправданным усложнением. В таких случаях модель
+можно передать напрямую через поле **ActionAdapterService::model**
+
+Сервис проверяет, может ли ваша модель быть передана напрямую
+
+    public function getDomainModel()
+    {
+        $input = $this->getInput();
+
+        if ($this->model) {
+            $model = $this->model instanceof IDomainModel ? $this->model : \Yii::createObject($this->model);
+
+            if (!$model->canInitWithoutRepo()) {
+                throw new InvalidCallException('Model ' . get_class($model) . ' can not be loaded without Repo');
+            }
+        }
+
+        ...
+    }
+
+По-умолчанию такое запрещено в модели **BaseDomainModel**. Для того чтобы открыть эту 
+функцию необходимо определить метод **IDomainModel::canInitWithoutRepo** и вернуть **true**
 
 ### Отложенные события
 

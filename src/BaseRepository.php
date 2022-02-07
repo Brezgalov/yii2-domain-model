@@ -23,11 +23,11 @@ abstract class BaseRepository extends Model implements IDomainModelRepository
         $this->input = $data;
 
         $this->load($data, '');
-        
+
         if (!$this->validate()) {
             ErrorException::throw($this->getErrors(), 422);
         }
-        
+
         return true;
     }
 
@@ -40,10 +40,6 @@ abstract class BaseRepository extends Model implements IDomainModelRepository
         $model = $this->loadDomainModel();
 
         $model->registerInput($this->input);
-
-        if (!$model->isValid()) {
-            throw new InvalidConfigException("Model loaded in failed state");
-        }
 
         return $model;
     }

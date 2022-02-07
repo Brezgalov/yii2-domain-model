@@ -233,4 +233,12 @@ abstract class BaseDomainModel extends Model implements IDomainModel
             'result' => $result,
         ]);
     }
+
+    /**
+     * @return bool
+     */
+    public function canInitWithoutRepo()
+    {
+        return false;
+    }
 }
