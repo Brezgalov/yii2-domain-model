@@ -157,7 +157,7 @@ class ActionAdapterService extends Action
             $model = $this->getDomainModel();
 
             if (!$model->isValid()) {
-                throw new InvalidConfigException("Model loaded in failed state");
+                throw new InvalidConfigException("Model " . get_class($model) . " loaded in failed state");
             }
 
             $unitOfWork = $this->getUnitOfWork();
