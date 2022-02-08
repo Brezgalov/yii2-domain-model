@@ -19,6 +19,11 @@ use yii\helpers\ArrayHelper;
 abstract class BaseDomainModel extends Model implements IDomainModel
 {
     /**
+     * @var bool
+     */
+    protected $noRepoAllowed = false;
+
+    /**
      * @var array
      */
     protected $crossDomainOrigin = [];
@@ -247,10 +252,25 @@ abstract class BaseDomainModel extends Model implements IDomainModel
     }
 
     /**
+     * Очень редко нужно обратиться к своим методам
+     * в модели которая уже получена, через репозиторий.
+     * Используем вот такой "хак"
+     *
+     * @return IDomainModel
+     */
+    public function getNoRepoClone()
+    {
+        $clone = clone $this;
+        $clone->noRepoAllowed = true;
+
+        return $clone;
+    }
+
+    /**
      * @return bool
      */
     public function canInitWithoutRepo()
     {
-        return false;
+        return $this->noRepoAllowed;
     }
 }
