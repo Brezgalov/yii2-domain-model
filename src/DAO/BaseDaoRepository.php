@@ -10,6 +10,11 @@ use yii\db\ActiveQuery;
 abstract class BaseDaoRepository extends Model implements IDaoRepository
 {
     /**
+     * @var callable[]
+     */
+    protected $queryCallbacks = [];
+
+    /**
      * ActiveRecord class
      * @var string
      */
@@ -61,14 +66,36 @@ abstract class BaseDaoRepository extends Model implements IDaoRepository
     }
 
     /**
+     * Можно добавить декоратор запроса, чтобы кастомизировать
+     * результирующий запрос
+     *
+     * @param callable $callback
+     * @return $this
+     */
+    public function addQueryDecorator(callable $callback)
+    {
+        $this->queryCallbacks[] = $callback;
+
+        return $this;
+    }
+
+    /**
      * @return ActiveQuery
      * @throws InvalidConfigException
      */
     public function getQuery()
     {
-        return $this->getBaseQuery(
-            $this->getQueryAlias()
-        );
+        $alias = $this->getQueryAlias();
+
+        $query = $this->getBaseQuery($alias);
+
+        foreach ($this->queryCallbacks as $callback) {
+            if (is_callable($callback)) {
+                $query = call_user_func($callback, $query, $alias, $this);
+            }
+        }
+
+        return $query;
     }
 
     /**
