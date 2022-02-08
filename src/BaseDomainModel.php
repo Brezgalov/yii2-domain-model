@@ -193,6 +193,14 @@ abstract class BaseDomainModel extends Model implements IDomainModel
             $modelConfig = \Yii::createObject($modelConfig);
         }
 
+        // Если модель передана напрямую - она должна иметь соответствующее разрешение
+        if (
+            $modelConfig instanceof IDomainModel &&
+            !$modelConfig->canInitWithoutRepo()
+        ) {
+            CrossDomainException::throwException(static::class, get_class($modelConfig), "Model can not be called straight. Use Repo");
+        }
+
         if ($modelConfig instanceof IDomainModelRepository) {
             /**
              * Если репозиторий передан на прямую - кросс-доменный вызов не должна вносить в него артефакты
@@ -206,6 +214,10 @@ abstract class BaseDomainModel extends Model implements IDomainModel
 
         if (!($modelConfig instanceof IDomainModel)) {
             CrossDomainException::throwException(static::class, null, "Only Models and Repos can be accessed in cross-domain way");
+        }
+
+        if (!$modelConfig->isValid()) {
+            CrossDomainException::throwException(static::class, get_class($modelConfig), "Model loaded in invalid state");
         }
 
         /**
