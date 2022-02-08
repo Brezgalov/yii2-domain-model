@@ -66,8 +66,8 @@ abstract class BaseDaoRepository extends Model implements IDaoRepository
     }
 
     /**
-     * Можно добавить декоратор запроса, чтобы кастомизировать
-     * результирующий запрос
+     * Можно добавить декоратор запроса, чтобы кастомизировать результирующий запрос
+     * Формат fun(ActiveQuery $query, $tableAlias, BaseDaoRepository $repo)
      *
      * @param callable $callback
      * @return $this
