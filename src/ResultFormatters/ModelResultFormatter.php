@@ -3,10 +3,10 @@
 namespace Brezgalov\DomainModel\ResultFormatters;
 
 use Brezgalov\DomainModel\Exceptions\ErrorException;
-use yii\base\Model;
+use yii\base\Component;
 use yii\web\Response;
 
-class ModelResultFormatter extends Model
+class ModelResultFormatter extends Component
 {
     /**
      * @var string
