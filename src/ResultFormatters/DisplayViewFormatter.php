@@ -5,7 +5,14 @@ namespace Brezgalov\DomainModel\ResultFormatters;
 use yii\base\Component;
 use yii\base\ViewContextInterface;
 use yii\helpers\ArrayHelper;
+use yii\base\InvalidConfigException;
 
+/**
+ * Class DisplayViewFormatter позволяет форматировать ответ
+ * в html страницу
+ *
+ * @package Brezgalov\DomainModel\ResultFormatters
+ */
 class DisplayViewFormatter extends Component implements IResultFormatter
 {
     const MODE_DEFAULT = 'renderDefault';
@@ -41,7 +48,7 @@ class DisplayViewFormatter extends Component implements IResultFormatter
 
     /**
      * @return object|ViewContextInterface
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
     protected function pickViewContext()
     {
@@ -56,10 +63,14 @@ class DisplayViewFormatter extends Component implements IResultFormatter
      * @param $model
      * @param $result
      * @return mixed|string
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
     public function format($model, $result)
     {
+        if (empty($this->view)) {
+            throw new InvalidConfigException("View is required");
+        }
+
         $params = [
             'model' => $model,
             'data' => $result,

@@ -6,7 +6,8 @@ class RenderActionAdapterService extends ActionAdapterService
 {
     /**
      * Применяет layout к результату сервиса
-     * Актуально для подключения действий с
+     * Актуально для подключения действий выводящих html
+     * или в сочетании с DisplayViewFormatter
      *
      * @return \Exception|false|mixed|string|void
      * @throws \Exception

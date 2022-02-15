@@ -381,6 +381,64 @@ DDD после работы с таким проектом - будет знач
 выполнении таких запросов, поэтому я решил упорядочить их выполнение. Такое поведение 
 можно отключить, передав **\'behaviors\' => []** в конфигурации сервиса.
 
+### Работа с View
+
+Для преобразования ответа метода модели в html необходимо использовать **DisplayViewFormatter**.
+
+Укажите 2 обязательных параметра:
+   * **view** - назавние вашего шаблона
+   * **viewContext** - класс реализующий **ViewContextInterface**. 
+     Это может быть контроллер, модуль или кастомный класс
+
+    class Controller extends \yii\web\Controller 
+    {
+        public function actionIndex()
+        {
+            $service = \Yii::$container->get(BaseService::class, [], [
+               'actionName' => MyDomainModel::METHOD_DO_STUFF,
+               'model' => new MyDomainModel(),
+               'formatter' => [
+                  'class' => DisplayViewFormatter::class,
+                  'view' => 'test/index',
+                  'viewContext' => $this,
+               ],
+            ]);
+            
+            // Вернет только html шаблона
+            return $service->handleAction();
+            
+            // Вернет html шаблона обернутый в layout
+            return $this->renderContent(
+                $service->handleAction();
+            );
+        }
+    }
+
+Было бы неудобно создавать новые экшены только для того, чтобы обернуть ответ модели в layout. 
+Чтобы избежать рутинной работы я добавил **RenderActionAdapterService**.
+
+    class TestController extends Controller
+    {
+        public function actions()
+        {
+            return [
+                'index' => [
+                    'class' => RenderActionAdapterService::class,
+                    'model' => RolesManagerDM::class,
+                    'actionName' => RolesManagerDM::METHOD_GET_ROLES,
+                    'formatter' => [
+                      'class' => DisplayViewFormatter::class,
+                      'view' => 'test/index',
+                      'viewContext' => $this,
+                    ],
+                ],
+            ];
+        }
+    }
+
+Результат метода преобразуется с помощью форматтера, а после этого **RenderActionAdapterService**
+вызывает метод **renderContent** у своего родительского контроллера.
+
 ### Unit of Work
 
 **UnitOfWork** должен отвечать за сохранение изменений. В моем варианте реализации этого
