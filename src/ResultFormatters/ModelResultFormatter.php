@@ -6,7 +6,7 @@ use Brezgalov\DomainModel\Exceptions\ErrorException;
 use yii\base\Component;
 use yii\web\Response;
 
-class ModelResultFormatter extends Component
+class ModelResultFormatter extends Component implements IResultFormatter
 {
     /**
      * @var string
@@ -34,7 +34,7 @@ class ModelResultFormatter extends Component
     /**
      * @param $model
      * @param $result
-     * @return array[]|object|Model|Response|null
+     * @return mixed
      * @throws \Exception
      */
     public function format($model, $result)
