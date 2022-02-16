@@ -2,6 +2,7 @@
 
 namespace Brezgalov\DomainModel\ResultFormatters;
 
+use Brezgalov\DomainModel\IDomainModel;
 use yii\base\Component;
 use yii\base\ViewContextInterface;
 use yii\helpers\ArrayHelper;
@@ -60,8 +61,21 @@ class DisplayViewFormatter extends Component implements IResultFormatter
     }
 
     /**
-     * @param $model
-     * @param $result
+     * @param IDomainModel $model
+     * @param mixed $result
+     * @return array
+     */
+    protected function prepareParams($model, $result)
+    {
+        return [
+            'model' => $model,
+            'data' => $result,
+        ];
+    }
+
+    /**
+     * @param IDomainModel $model
+     * @param mixed $result
      * @return mixed|string
      * @throws InvalidConfigException
      */
@@ -71,10 +85,7 @@ class DisplayViewFormatter extends Component implements IResultFormatter
             throw new InvalidConfigException("View is required");
         }
 
-        $params = [
-            'model' => $model,
-            'data' => $result,
-        ];
+        $params = $this->prepareParams($model, $result);
 
         $context = $this->pickViewContext();
         $method = $this->pickRenderMethod();
