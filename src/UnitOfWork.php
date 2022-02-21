@@ -86,6 +86,8 @@ class UnitOfWork extends Model implements IUnitOfWork
      */
     public function flush(IDomainModel $model)
     {
+        $this->flushModel($model);
+
         if ($this->trans) {
             $this->trans->commit();
         }
