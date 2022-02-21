@@ -1,8 +1,8 @@
 <?php
 
-namespace app\domain\UserProfile;
+namespace example\domain\UserProfile;
 
-use app\dao\repositories\UsersDaoRepository;
+use example\dao\repositories\UsersDaoRepository;
 use Brezgalov\DomainModel\BaseRepository;
 use Brezgalov\DomainModel\Exceptions\ErrorException;
 

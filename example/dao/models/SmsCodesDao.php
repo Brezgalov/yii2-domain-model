@@ -1,6 +1,6 @@
 <?php
 
-namespace app\dao\models;
+namespace example\dao\models;
 
 use Yii;
 use yii\behaviors\TimestampBehavior;

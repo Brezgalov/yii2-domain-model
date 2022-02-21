@@ -1,9 +1,9 @@
 <?php
 
-namespace app\dao\repositories;
+namespace example\dao\repositories;
 
-use app\helpers\PhoneHelper;
-use app\models\Users;
+use example\helpers\PhoneHelper;
+use example\models\Users;
 use Brezgalov\DomainModel\DAO\BaseDaoRepository;
 use yii\db\ActiveQuery;
 

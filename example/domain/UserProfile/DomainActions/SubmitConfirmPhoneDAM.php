@@ -1,10 +1,10 @@
 <?php
 
-namespace app\domain\UserProfile\DomainActions;
+namespace example\domain\UserProfile\DomainActions;
 
-use app\dao\repositories\SmsCodesDaoRepository;
-use app\domain\UserProfile\UserProfileDM;
-use app\helpers\PhoneHelper;
+use example\dao\repositories\SmsCodesDaoRepository;
+use example\domain\UserProfile\UserProfileDM;
+use example\helpers\PhoneHelper;
 use Brezgalov\DomainModel\BaseDomainActionModel;
 use Brezgalov\DomainModel\Exceptions\ErrorException;
 use Brezgalov\DomainModel\IDomainModel;

@@ -1,9 +1,9 @@
 <?php
 
-namespace app\domain\UserProfile\DomainActions;
+namespace example\domain\UserProfile\DomainActions;
 
-use app\domain\UserProfile\Events\StoreModelEvent;
-use app\domain\UserProfile\UserProfileDM;
+use example\domain\UserProfile\Events\StoreModelEvent;
+use example\domain\UserProfile\UserProfileDM;
 use Brezgalov\DomainModel\BaseDomainActionModel;
 
 /**
@@ -11,7 +11,7 @@ use Brezgalov\DomainModel\BaseDomainActionModel;
  *
  * Ставим юзеру отметку про то, что его телефон подтвержден
  *
- * @package app\domain\UserProfile\DomainActions
+ * @package example\domain\UserProfile\DomainActions
  */
 class SetPhoneConfirmedDAM extends BaseDomainActionModel
 {

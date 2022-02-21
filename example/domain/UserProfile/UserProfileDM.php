@@ -1,13 +1,13 @@
 <?php
 
-namespace app\domain\UserProfile;
+namespace example\domain\UserProfile;
 
-use app\dao\models\UsersDao;
-use app\domain\DriverSelfArrival\DriverSelfArrivalDM;
-use app\domain\UserProfile\DomainActions\RequestConfirmPhoneDAM;
-use app\domain\UserProfile\DomainActions\SetPhoneConfirmedDAM;
-use app\domain\UserProfile\DomainActions\SubmitConfirmPhoneDAM;
-use app\domain\UserProfile\DomainActions\UpdateProfileDAM;
+use example\dao\models\UsersDao;
+use example\domain\DriverSelfArrival\DriverSelfArrivalDM;
+use example\domain\UserProfile\DomainActions\RequestConfirmPhoneDAM;
+use example\domain\UserProfile\DomainActions\SetPhoneConfirmedDAM;
+use example\domain\UserProfile\DomainActions\SubmitConfirmPhoneDAM;
+use example\domain\UserProfile\DomainActions\UpdateProfileDAM;
 use Brezgalov\DomainModel\BaseDomainModel;
 use yii\helpers\ArrayHelper;
 

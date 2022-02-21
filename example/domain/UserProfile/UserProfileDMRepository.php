@@ -1,9 +1,9 @@
 <?php
 
-namespace app\domain\UserProfile;
+namespace example\domain\UserProfile;
 
-use app\dao\repositories\UsersDaoRepository;
-use app\traits\GetUserTrait;
+use example\dao\repositories\UsersDaoRepository;
+use example\traits\GetUserTrait;
 use Brezgalov\DomainModel\BaseRepository;
 use Brezgalov\DomainModel\Exceptions\ErrorException;
 use Brezgalov\DomainModel\IDomainModelRepository;

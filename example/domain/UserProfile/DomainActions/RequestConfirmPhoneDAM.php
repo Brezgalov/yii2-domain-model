@@ -1,13 +1,13 @@
 <?php
 
-namespace app\domain\UserProfile\DomainActions;
+namespace example\domain\UserProfile\DomainActions;
 
-use app\domain\Notifications\NotificationsDM;
-use app\dao\repositories\SmsCodesDaoRepository;
-use app\dao\repositories\UsersDaoRepository;
-use app\domain\UserProfile\UserProfileDM;
-use app\forms\UserSmsCodeSenderService;
-use app\helpers\PhoneHelper;
+use example\domain\Notifications\NotificationsDM;
+use example\dao\repositories\SmsCodesDaoRepository;
+use example\dao\repositories\UsersDaoRepository;
+use example\domain\UserProfile\UserProfileDM;
+use example\forms\UserSmsCodeSenderService;
+use example\helpers\PhoneHelper;
 use Brezgalov\DomainModel\BaseDomainActionModel;
 use Brezgalov\DomainModel\IDomainModel;
 use yii\base\InvalidConfigException;

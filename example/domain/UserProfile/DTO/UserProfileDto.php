@@ -1,9 +1,9 @@
 <?php
 
-namespace app\domain\UserProfile\DTO;
+namespace example\domain\UserProfile\DTO;
 
-use app\models\StevedoreUnloads;
-use app\models\Users;
+use example\models\StevedoreUnloads;
+use example\models\Users;
 use yii\base\Model;
 use yii\helpers\ArrayHelper;
 

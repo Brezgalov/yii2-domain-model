@@ -1,8 +1,8 @@
 <?php
 
-namespace app\dao\repositories;
+namespace example\dao\repositories;
 
-use app\dao\models\SmsCodesDao;
+use example\dao\models\SmsCodesDao;
 use Brezgalov\DomainModel\DAO\BaseDaoRepository;
 use yii\db\ActiveQuery;
 

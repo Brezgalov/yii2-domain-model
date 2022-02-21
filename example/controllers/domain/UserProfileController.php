@@ -1,12 +1,12 @@
 <?php
 
-namespace app\controllers\domain;
+namespace example\controllers\domain;
 
-use app\controllers\BaseActiveController;
-use app\domain\UserProfile\DomainActions\RequestConfirmPhoneDAM;
-use app\domain\UserProfile\Formatters\AllFineUserProfileFormatter;
-use app\domain\UserProfile\UserProfileDM;
-use app\domain\UserProfile\UserProfileDMRepository;
+use example\controllers\BaseActiveController;
+use example\domain\UserProfile\DomainActions\RequestConfirmPhoneDAM;
+use example\domain\UserProfile\Formatters\AllFineUserProfileFormatter;
+use example\domain\UserProfile\UserProfileDM;
+use example\domain\UserProfile\UserProfileDMRepository;
 use Brezgalov\DomainModel\Services\ActionAdapterService;
 use yii\rest\OptionsAction;
 

@@ -1,9 +1,9 @@
 <?php
 
-namespace app\domain\UserProfile\Formatters;
+namespace example\domain\UserProfile\Formatters;
 
-use app\domain\UserProfile\DTO\UserProfileDto;
-use app\domain\UserProfile\UserProfileDM;
+use example\domain\UserProfile\DTO\UserProfileDto;
+use example\domain\UserProfile\UserProfileDM;
 use Brezgalov\DomainModel\IDomainModel;
 use Brezgalov\DomainModel\ResultFormatters\ModelResultFormatter;
 

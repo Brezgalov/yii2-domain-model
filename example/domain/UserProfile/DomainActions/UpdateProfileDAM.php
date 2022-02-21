@@ -1,10 +1,10 @@
 <?php
 
-namespace app\domain\UserProfile\DomainActions;
+namespace example\domain\UserProfile\DomainActions;
 
-use app\domain\UserProfile\Events\StoreModelEvent;
-use app\domain\UserProfile\UserProfileDM;
-use app\helpers\PhoneHelper;
+use example\domain\UserProfile\Events\StoreModelEvent;
+use example\domain\UserProfile\UserProfileDM;
+use example\helpers\PhoneHelper;
 use Brezgalov\DomainModel\BaseDomainActionModel;
 
 class UpdateProfileDAM extends BaseDomainActionModel

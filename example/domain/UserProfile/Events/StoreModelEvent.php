@@ -1,8 +1,8 @@
 <?php
 
-namespace app\domain\UserProfile\Events;
+namespace example\domain\UserProfile\Events;
 
-use app\domain\UserProfile\UserProfileDM;
+use example\domain\UserProfile\UserProfileDM;
 use Brezgalov\DomainModel\Events\IEvent;
 use yii\base\Model;
 use yii\db\Exception;

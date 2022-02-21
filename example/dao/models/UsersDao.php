@@ -1,28 +1,28 @@
 <?php
 
-namespace app\dao\models;
+namespace example\dao\models;
 
-use app\behaviors\MatchUserExporterPhoneBehavior;
-use app\models\Exporters;
-use app\models\ExporterWhitePhones;
-use app\models\LoadDays;
-use app\models\Notifications;
-use app\models\Permissions;
-use app\models\Quotas;
-use app\models\StevedoreUnloadLimits;
-use app\models\StevedoreUnloads;
-use app\models\Suppliers;
-use app\models\TimeslotRequestAutofills;
-use app\models\TimeslotRequestGroups;
-use app\models\TimeslotRequests;
-use app\models\Timeslots;
-use app\models\Tokens;
-use app\models\UsersStevedoreUnloads;
-use app\models\UserTrucks;
+use example\behaviors\MatchUserExporterPhoneBehavior;
+use example\models\Exporters;
+use example\models\ExporterWhitePhones;
+use example\models\LoadDays;
+use example\models\Notifications;
+use example\models\Permissions;
+use example\models\Quotas;
+use example\models\StevedoreUnloadLimits;
+use example\models\StevedoreUnloads;
+use example\models\Suppliers;
+use example\models\TimeslotRequestAutofills;
+use example\models\TimeslotRequestGroups;
+use example\models\TimeslotRequests;
+use example\models\Timeslots;
+use example\models\Tokens;
+use example\models\UsersStevedoreUnloads;
+use example\models\UserTrucks;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
-use app\access\AccessControl;
+use example\access\AccessControl;
 use yii\helpers\ArrayHelper;
 use yii\rbac\ManagerInterface;
 use yii\web\IdentityInterface;
