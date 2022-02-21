@@ -12,7 +12,7 @@ abstract class MysqlAccessHelper extends Component
     /**
      * @return string
      */
-    public function getPrimaryKeyName()
+    public static function getPrimaryKeyName()
     {
         return 'id';
     }
@@ -20,16 +20,16 @@ abstract class MysqlAccessHelper extends Component
     /**
      * @return string
      */
-    public abstract function getTable();
+    public abstract static function getTable();
 
     /**
      * @return Query
      */
-    public function query()
+    public static function query()
     {
         return (new Query())
             ->select('*')
-            ->from($this->getTable());
+            ->from(static::getTable());
     }
 
     /**
@@ -38,12 +38,12 @@ abstract class MysqlAccessHelper extends Component
      * @return array|false|mixed
      * @throws \Exception
      */
-    public function insert(array $columns, Connection $db = null)
+    public static function insert(array $columns, Connection $db = null)
     {
         $db = $db ?: \Yii::$app->db;
-        $res = $db->schema->insert($this->getTable(), $columns);
+        $res = $db->schema->insert(static::getTable(), $columns);
 
-        return is_array($res) ? ArrayHelper::getValue($res, $this->getPrimaryKeyName()) : $res;
+        return is_array($res) ? ArrayHelper::getValue($res, static::getPrimaryKeyName()) : $res;
     }
 
     /**
@@ -52,14 +52,14 @@ abstract class MysqlAccessHelper extends Component
      * @param Connection|null $db
      * @return \yii\db\Command
      */
-    public function update($condition, array $columns, Connection $db = null)
+    public static function update($condition, array $columns, Connection $db = null)
     {
         $db = $db ?: \Yii::$app->db;
 
         if (is_integer($condition) || is_string($condition)) {
-            $condition = [$this->getPrimaryKeyName() => $condition];
+            $condition = [static::getPrimaryKeyName() => $condition];
         }
 
-        return $db->createCommand()->update($this->getTable(), $columns, $condition);
+        return $db->createCommand()->update(static::getTable(), $columns, $condition);
     }
 }
