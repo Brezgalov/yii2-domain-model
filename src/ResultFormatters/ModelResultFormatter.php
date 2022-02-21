@@ -4,6 +4,7 @@ namespace Brezgalov\DomainModel\ResultFormatters;
 
 use Brezgalov\DomainModel\Exceptions\ErrorException;
 use yii\base\Component;
+use yii\base\Model;
 use yii\web\Response;
 
 class ModelResultFormatter extends Component implements IResultFormatter
