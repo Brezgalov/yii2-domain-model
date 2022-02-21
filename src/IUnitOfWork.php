@@ -30,7 +30,8 @@ interface IUnitOfWork
     public function die();
 
     /**
+     * @param IDomainModel $model
      * @return void
      */
-    public function flush();
+    public function flush(IDomainModel $model);
 }

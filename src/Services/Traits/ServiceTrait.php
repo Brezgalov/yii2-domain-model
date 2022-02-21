@@ -141,15 +141,15 @@ trait ServiceTrait
             }
 
             if ($result === false) {
-                $model->getUnitOfWork()->die();
+                $unitOfWork->die();
             } else {
-                $model->getUnitOfWork()->flush();
+                $unitOfWork->flush($model);
             }
         } catch (\Exception $ex) {
             $result = $ex;
 
             if ($unitOfWork) {
-                $model->getUnitOfWork()->die();
+                $unitOfWork->die();
             }
         }
 

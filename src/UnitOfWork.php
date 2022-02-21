@@ -81,12 +81,28 @@ class UnitOfWork extends Model implements IUnitOfWork
         $this->eventsStore->clearEvents();
     }
 
-    public function flush()
+    /**
+     * @param IDomainModel $model
+     */
+    public function flush(IDomainModel $model)
     {
         if ($this->trans) {
             $this->trans->commit();
         }
 
         $this->eventsStore->fireEvents();
+    }
+
+    /**
+     * Логично было бы сделать этот метод абстрактным
+     * На момент его появления часть кода уже написана без него
+     * с использованием save в логике, поэтому для совместимости
+     * он будет просто пустым
+     *
+     * @param IDomainModel $model
+     */
+    protected function flushModel(IDomainModel $model)
+    {
+        // flush your model here
     }
 }
