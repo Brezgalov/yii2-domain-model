@@ -39,6 +39,32 @@ abstract class BaseDomainModel extends Model implements IDomainModel
     protected $input = [];
 
     /**
+     * @var DelayedEventsStorage
+     */
+    protected $eventsStore;
+
+    /**
+     * BaseDomainModel constructor.
+     * @param array $config
+     */
+    public function __construct($config = [])
+    {
+        parent::__construct($config);
+
+        if (empty($this->eventsStore)) {
+            $this->eventsStore = new DelayedEventsStorage();
+        }
+    }
+
+    /**
+     * @param DelayedEventsStorage $storage
+     */
+    public function linkEventsStore(DelayedEventsStorage $storage)
+    {
+        $this->eventsStore = &$storage;
+    }
+
+    /**
      * @return array
      */
     public function actions()
@@ -129,25 +155,6 @@ abstract class BaseDomainModel extends Model implements IDomainModel
     }
 
     /**
-     * Link unitOfWork to delay storage-write and events
-     *
-     * @param IUnitOfWork $unitOfWork
-     */
-    public function linkUnitOfWork(IUnitOfWork $unitOfWork)
-    {
-        $this->unitOfWork = &$unitOfWork;
-        $this->unitOfWork->ready();
-    }
-
-    /**
-     * @return IUnitOfWork
-     */
-    public function getUnitOfWork()
-    {
-        return clone $this->unitOfWork;
-    }
-
-    /**
      * allows to delay events inside DomainActionModel
      *
      * @param IEvent $event
@@ -155,11 +162,11 @@ abstract class BaseDomainModel extends Model implements IDomainModel
      */
     public function delayEvent(IEvent $event)
     {
-        if (!$this->unitOfWork) {
-            throw new InvalidConfigException('UnitOfWork not defined in domain model ' . static::class);
+        if (!$this->eventsStore) {
+            throw new InvalidConfigException('eventsStore not defined in domain model ' . static::class);
         }
 
-        $this->unitOfWork->delayEvent($event);
+        $this->eventsStore->delayEvent($event);
     }
 
     /**
@@ -171,11 +178,11 @@ abstract class BaseDomainModel extends Model implements IDomainModel
      */
     public function delayEventByKey(IEvent $event, $key)
     {
-        if (!$this->unitOfWork) {
-            throw new InvalidConfigException('UnitOfWork not defined in domain model ' . static::class);
+        if (!$this->eventsStore) {
+            throw new InvalidConfigException('eventsStore not defined in domain model ' . static::class);
         }
 
-        $this->unitOfWork->delayEventByKey($event, $key);
+        $this->eventsStore->delayEventByKey($event, $key);
     }
 
     /**
@@ -231,16 +238,10 @@ abstract class BaseDomainModel extends Model implements IDomainModel
          */
         $modelConfig = clone $modelConfig;
         $modelConfig->registerCrossDomainOrigin(static::class);
+        $modelConfig->linkEventsStore($this->eventsStore);
 
         if (!in_array($methodName, $modelConfig->crossDomainActionsAllowed())) {
             CrossDomainException::throwException(static::class, get_class($modelConfig), "Method {$methodName} is not allowed for cross-domain access");
-        }
-
-        /**
-         * pass UnitOfWork by ref, so events storage and transaction stays "singltoned"
-         */
-        if ($this->unitOfWork) {
-            $modelConfig->linkUnitOfWork($this->unitOfWork);
         }
 
         $result = $modelConfig->call($methodName, $input);

@@ -3,11 +3,17 @@
 namespace Brezgalov\DomainModel;
 
 use Brezgalov\DomainModel\DTO\CrossDomainCallDto;
+use Brezgalov\DomainModel\Events\DelayedEventsStorage;
 use Brezgalov\DomainModel\Events\IEvent;
 use yii\base\InvalidConfigException;
 
 interface IDomainModel
 {
+    /**
+     * @param DelayedEventsStorage $storage
+     */
+    public function linkEventsStore(DelayedEventsStorage $storage);
+
     /**
      * @return array
      */
@@ -56,16 +62,6 @@ interface IDomainModel
      * @return bool
      */
     public function isValid();
-
-    /**
-     * @param IUnitOfWork $unitOfWork
-     */
-    public function linkUnitOfWork(IUnitOfWork $unitOfWork);
-
-    /**
-     * @return IUnitOfWork
-     */
-    public function getUnitOfWork();
 
     /**
      * allows to delay events inside DomainActionModel

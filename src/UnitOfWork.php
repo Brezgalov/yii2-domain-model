@@ -26,11 +26,6 @@ class UnitOfWork extends Model implements IUnitOfWork
     protected $trans;
 
     /**
-     * @var DelayedEventsStorage
-     */
-    protected $eventsStore;
-
-    /**
      * UnitOfWork constructor.
      * @param array $config
      * @throws \yii\base\InvalidConfigException
@@ -42,27 +37,6 @@ class UnitOfWork extends Model implements IUnitOfWork
         if (empty($this->dbComponent) && \Yii::$app->has('db')) {
             $this->dbComponent = \Yii::$app->get('db');
         }
-
-        if (empty($this->eventsStore)) {
-            $this->eventsStore = new DelayedEventsStorage();
-        }
-    }
-
-    /**
-     * @param IEvent $event
-     */
-    public function delayEvent(IEvent $event)
-    {
-        $this->eventsStore->delayEvent($event);
-    }
-
-    /**
-     * @param IEvent $event
-     * @param int|string $key
-     */
-    public function delayEventByKey(IEvent $event, $key)
-    {
-        $this->eventsStore->delayEventByKey($event, $key);
     }
 
     public function ready()
@@ -97,7 +71,7 @@ class UnitOfWork extends Model implements IUnitOfWork
 
     /**
      * Логично было бы сделать этот метод абстрактным
-     * На момент его появления часть кода уже написана без него
+     * На момент его появления часть кода уже написана без него (переезд с api-helpers)
      * с использованием save в логике, поэтому для совместимости
      * он будет просто пустым
      *

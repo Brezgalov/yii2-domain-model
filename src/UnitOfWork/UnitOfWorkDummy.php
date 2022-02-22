@@ -4,6 +4,7 @@ namespace Brezgalov\DomainModel\UnitOfWork;
 
 use Brezgalov\DomainModel\Events\DelayedEventsStorage;
 use Brezgalov\DomainModel\Events\IEvent;
+use Brezgalov\DomainModel\IDomainModel;
 use Brezgalov\DomainModel\IUnitOfWork;
 use yii\base\Model;
 use yii\db\Connection;
@@ -19,23 +20,6 @@ use yii\db\Transaction;
  */
 class UnitOfWorkDummy implements IUnitOfWork
 {
-    /**
-     * @param IEvent $event
-     */
-    public function delayEvent(IEvent $event)
-    {
-        // dummy
-    }
-
-    /**
-     * @param IEvent $event
-     * @param int|string $key
-     */
-    public function delayEventByKey(IEvent $event, $key)
-    {
-        // dummy
-    }
-
     public function ready()
     {
         // dummy
@@ -46,7 +30,7 @@ class UnitOfWorkDummy implements IUnitOfWork
         // dummy
     }
 
-    public function flush()
+    public function flush(IDomainModel $model)
     {
         // dummy
     }

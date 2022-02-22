@@ -133,7 +133,7 @@ trait ServiceTrait
             }
 
             $unitOfWork = $this->getUnitOfWork();
-            $model->linkUnitOfWork($unitOfWork);
+            $unitOfWork->ready();
 
             $result = $model->call($this->getActionName());
             if (!$model->isValid()) {
