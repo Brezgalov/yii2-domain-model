@@ -33,6 +33,11 @@ abstract class BaseRepository extends Model implements IDomainModelRepository
 
     /**
      * @return IDomainModel
+     */
+    public abstract function loadDomainModel();
+
+    /**
+     * @return IDomainModel
      * @throws \yii\base\InvalidConfigException
      */
     public function getDomainModel()

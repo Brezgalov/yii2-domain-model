@@ -7,7 +7,7 @@ use Brezgalov\DomainModel\Services\Behaviors\ActionAdapterMutexBehavior;
 use yii\base\Action;
 use yii\base\InvalidConfigException;
 
-class ActionAdapterService extends Action implements IService
+class ActionAdapterService extends Action implements IService, IServiceSetup
 {
     use ServiceTrait;
 

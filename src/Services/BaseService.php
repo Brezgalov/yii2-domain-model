@@ -5,7 +5,7 @@ namespace Brezgalov\DomainModel\Services;
 use Brezgalov\DomainModel\Services\Traits\ServiceTrait;
 use \yii\base\Model;
 
-class BaseService extends Model implements IService
+class BaseService extends Model implements IService, IServiceSetup
 {
     use ServiceTrait;
 

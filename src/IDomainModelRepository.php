@@ -14,11 +14,5 @@ interface IDomainModelRepository
      * @return IDomainModel
      * @throws \yii\base\InvalidConfigException
      */
-    public function loadDomainModel();
-
-    /**
-     * @return IDomainModel
-     * @throws \yii\base\InvalidConfigException
-     */
     public function getDomainModel();
 }
