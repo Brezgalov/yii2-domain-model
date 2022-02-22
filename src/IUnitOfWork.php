@@ -12,9 +12,9 @@ interface IUnitOfWork
     public function ready();
 
     /**
-     * @return void
+     * @param IDomainModel $model
      */
-    public function die();
+    public function die(IDomainModel $model);
 
     /**
      * @param IDomainModel $model

@@ -46,6 +46,9 @@ class UnitOfWork extends Model implements IUnitOfWork
         }
     }
 
+    /**
+     * @param IDomainModel $model
+     */
     public function die(IDomainModel $model)
     {
         $this->dieModel($model);
