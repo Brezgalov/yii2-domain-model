@@ -65,6 +65,22 @@ abstract class BaseDomainModel extends Model implements IDomainModel
     }
 
     /**
+     * @return bool
+     */
+    public function clearEvents()
+    {
+        return $this->eventsStore->clearEvents();
+    }
+
+    /**
+     * @return bool
+     */
+    public function fireEvents()
+    {
+        return $this->eventsStore->fireEvents();
+    }
+
+    /**
      * @return array
      */
     public function actions()

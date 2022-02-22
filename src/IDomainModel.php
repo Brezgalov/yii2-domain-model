@@ -15,6 +15,16 @@ interface IDomainModel
     public function linkEventsStore(DelayedEventsStorage $storage);
 
     /**
+     * @return bool
+     */
+    public function clearEvents();
+
+    /**
+     * @return bool
+     */
+    public function fireEvents();
+
+    /**
      * @return array
      */
     public function actions();

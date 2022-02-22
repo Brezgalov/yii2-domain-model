@@ -46,13 +46,15 @@ class UnitOfWork extends Model implements IUnitOfWork
         }
     }
 
-    public function die()
+    public function die(IDomainModel $model)
     {
+        $this->dieModel($model);
+
         if ($this->trans) {
             $this->trans->rollBack();
         }
 
-        $this->eventsStore->clearEvents();
+        $model->clearEvents();
     }
 
     /**
@@ -66,7 +68,7 @@ class UnitOfWork extends Model implements IUnitOfWork
             $this->trans->commit();
         }
 
-        $this->eventsStore->fireEvents();
+        $model->fireEvents();
     }
 
     /**
@@ -78,6 +80,19 @@ class UnitOfWork extends Model implements IUnitOfWork
      * @param IDomainModel $model
      */
     protected function flushModel(IDomainModel $model)
+    {
+        // flush your model here
+    }
+
+    /**
+     * Логично было бы сделать этот метод абстрактным
+     * На момент его появления часть кода уже написана без него (переезд с api-helpers)
+     * с использованием save в логике, поэтому для совместимости
+     * он будет просто пустым
+     *
+     * @param IDomainModel $model
+     */
+    protected function dieModel(IDomainModel $model)
     {
         // flush your model here
     }
