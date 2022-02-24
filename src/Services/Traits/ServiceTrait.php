@@ -141,7 +141,7 @@ trait ServiceTrait
             }
 
             if ($result === false) {
-                $unitOfWork->die();
+                $unitOfWork->die($model);
             } else {
                 $unitOfWork->flush($model);
             }
@@ -149,7 +149,7 @@ trait ServiceTrait
             $result = $ex;
 
             if ($unitOfWork) {
-                $unitOfWork->die();
+                $unitOfWork->die($model);
             }
         }
 
