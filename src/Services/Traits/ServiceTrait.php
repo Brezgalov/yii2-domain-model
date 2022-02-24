@@ -2,6 +2,7 @@
 
 namespace Brezgalov\DomainModel\Services\Traits;
 
+use Brezgalov\DomainModel\Events\AfterFlushEvent;
 use yii\base\InvalidCallException;
 use Brezgalov\DomainModel\IDomainModel;
 use Brezgalov\DomainModel\IDomainModelRepository;
@@ -36,6 +37,11 @@ trait ServiceTrait
      * @var string|array|IResultFormatter
      */
     public $formatter;
+
+    /**
+     * @var AfterFlushEvent
+     */
+    public $afterFlushEvent;
 
     /**
      * @return IDomainModelRepository
@@ -144,6 +150,13 @@ trait ServiceTrait
                 $unitOfWork->die($model);
             } else {
                 $unitOfWork->flush($model);
+
+                if ($this->afterFlushEvent instanceof AfterFlushEvent) {
+                    $this->afterFlushEvent
+                        ->setModel($model)
+                        ->setInput($this->getInput())
+                        ->run();
+                }
             }
         } catch (\Exception $ex) {
             $result = $ex;
