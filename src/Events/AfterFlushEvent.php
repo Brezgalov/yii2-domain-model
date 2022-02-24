@@ -3,8 +3,9 @@
 namespace Brezgalov\DomainModel\Events;
 
 use Brezgalov\DomainModel\IDomainModel;
+use yii\base\Component;
 
-abstract class AfterFlushEvent implements IEvent
+abstract class AfterFlushEvent extends Component implements IEvent
 {
     /**
      * @var IDomainModel
