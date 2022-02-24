@@ -134,6 +134,10 @@ trait ServiceTrait
             $resultFormatter = $this->getFormatter();
             $model = $this->getDomainModel();
 
+            if (empty($model)) {
+                throw new InvalidConfigException("Model not instantiated");
+            }
+
             if (!$model->isValid()) {
                 throw new InvalidConfigException("Model " . get_class($model) . " loaded in failed state");
             }
