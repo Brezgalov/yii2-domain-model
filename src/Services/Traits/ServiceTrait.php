@@ -149,10 +149,15 @@ trait ServiceTrait
             if ($result === false) {
                 $unitOfWork->die($model);
             } else {
+                $afterFlushEvent = $this->afterFlushEvent;
+                if ($afterFlushEvent && (is_string($afterFlushEvent) || is_array($afterFlushEvent))) {
+                    $afterFlushEvent = \Yii::createObject($afterFlushEvent);
+                }
+
                 $unitOfWork->flush($model);
 
-                if ($this->afterFlushEvent instanceof AfterFlushEvent) {
-                    $this->afterFlushEvent
+                if ($afterFlushEvent instanceof AfterFlushEvent) {
+                    $afterFlushEvent
                         ->setModel($model)
                         ->setInput($this->getInput())
                         ->run();
