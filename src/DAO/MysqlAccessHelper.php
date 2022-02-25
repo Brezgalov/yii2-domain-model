@@ -60,6 +60,6 @@ abstract class MysqlAccessHelper extends Component
             $condition = [static::getPrimaryKeyName() => $condition];
         }
 
-        return $db->createCommand()->update(static::getTable(), $columns, $condition);
+        return $db->createCommand()->update(static::getTable(), $columns, $condition)->execute();
     }
 }
