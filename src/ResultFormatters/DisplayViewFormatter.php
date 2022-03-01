@@ -7,7 +7,6 @@ use yii\base\Component;
 use yii\base\ViewContextInterface;
 use yii\helpers\ArrayHelper;
 use yii\base\InvalidConfigException;
-use \yii\base\Controller;
 
 /**
  * Class DisplayViewFormatter позволяет форматировать ответ
@@ -40,11 +39,6 @@ class DisplayViewFormatter extends Component implements IResultFormatter
      * @var ViewContextInterface
      */
     public $viewContext;
-
-    /**
-     * @var Controller
-     */
-    public $controller;
 
     /**
      * @return mixed
@@ -105,12 +99,6 @@ class DisplayViewFormatter extends Component implements IResultFormatter
         $context = $this->pickViewContext();
         $method = $this->pickRenderMethod();
 
-        $res = call_user_func([\Yii::$app->view, $method], $this->view, $params, $context);
-
-        if ($this->controller instanceof Controller) {
-            return $this->controller->renderContent($res);
-        }
-
-        return $res;
+        return call_user_func([\Yii::$app->view, $method], $this->view, $params, $context);
     }
 }
