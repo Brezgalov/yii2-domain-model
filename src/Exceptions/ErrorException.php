@@ -39,7 +39,10 @@ class ErrorException extends \Exception
         $ex = new static();
         $ex->statusCode = 422;
         $ex->error = [
-            $attribute => [$error],
+            [
+                "field" => $attribute,
+                "message" => $error,
+            ],
         ];
 
         throw $ex;
