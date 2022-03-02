@@ -44,7 +44,9 @@ abstract class BaseRepository extends Model implements IDomainModelRepository
     {
         $model = $this->loadDomainModel();
 
-        $model->registerInput($this->input);
+        if ($model) {
+            $model->registerInput($this->input);
+        }
 
         return $model;
     }

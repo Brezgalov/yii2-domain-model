@@ -44,6 +44,11 @@ trait ServiceTrait
     public $afterFlushEvent;
 
     /**
+     * @var bool
+     */
+    public $emptyModelAllowed = false;
+
+    /**
      * @return IDomainModelRepository
      * @throws InvalidConfigException
      */
@@ -128,13 +133,15 @@ trait ServiceTrait
     {
         $unitOfWork = null;
         $model = null;
-        $resultFormatter = null;
 
         try {
-            $resultFormatter = $this->getFormatter();
             $model = $this->getDomainModel();
 
             if (empty($model)) {
+                if ($this->emptyModelAllowed) {
+                    return $this->formatResult(null, null);
+                }
+
                 throw new InvalidConfigException("Model not instantiated");
             }
 
@@ -174,6 +181,18 @@ trait ServiceTrait
                 $unitOfWork->die($model);
             }
         }
+
+        return $this->formatResult($model, $result);
+    }
+
+    /**
+     * @param IDomainModel $model
+     * @param mixed $result
+     * @return mixed
+     */
+    public function formatResult(IDomainModel $model, $result)
+    {
+        $resultFormatter = $this->getFormatter();
 
         return $resultFormatter ? $resultFormatter->format($model, $result) : $result;
     }
