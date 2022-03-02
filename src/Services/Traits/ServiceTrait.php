@@ -190,7 +190,7 @@ trait ServiceTrait
      * @param mixed $result
      * @return mixed
      */
-    public function formatResult(IDomainModel $model, $result)
+    public function formatResult($model, $result)
     {
         $resultFormatter = $this->getFormatter();
 

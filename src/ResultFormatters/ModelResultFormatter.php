@@ -56,7 +56,7 @@ class ModelResultFormatter extends Component implements IResultFormatter
         if ($result === false) {
             $errorModel = $model;
 
-            if ($errorModel instanceof Model) {
+            if ($model && $errorModel instanceof Model) {
                 if (!$model->hasErrors()) {
                     $model->addError(static::class, $this->unknownExecutionErrorText);
                 }
