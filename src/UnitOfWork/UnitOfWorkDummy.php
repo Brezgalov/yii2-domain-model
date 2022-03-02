@@ -25,7 +25,7 @@ class UnitOfWorkDummy implements IUnitOfWork
         // dummy
     }
 
-    public function die()
+    public function die(IDomainModel $model)
     {
         // dummy
     }
