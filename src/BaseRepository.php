@@ -6,7 +6,7 @@ use Brezgalov\DomainModel\Exceptions\ErrorException;
 use yii\base\Model;
 use yii\base\InvalidConfigException;
 
-abstract class BaseRepository extends Model implements IDomainModelRepository
+abstract class BaseRepository extends Model implements IDomainModelRepository, IRegisterInputInterface
 {
     /**
      * @var array
@@ -44,7 +44,7 @@ abstract class BaseRepository extends Model implements IDomainModelRepository
     {
         $model = $this->loadDomainModel();
 
-        if ($model) {
+        if ($model instanceof IRegisterInputInterface) {
             $model->registerInput($this->input);
         }
 

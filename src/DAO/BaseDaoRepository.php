@@ -2,12 +2,13 @@
 
 namespace Brezgalov\DomainModel\DAO;
 
+use Brezgalov\DomainModel\IRegisterInputInterface;
 use yii\base\InvalidCallException;
 use yii\base\InvalidConfigException;
 use yii\base\Model;
 use yii\db\ActiveQuery;
 
-abstract class BaseDaoRepository extends Model implements IDaoRepository
+abstract class BaseDaoRepository extends Model implements IDaoRepository, IRegisterInputInterface
 {
     /**
      * @var callable[]

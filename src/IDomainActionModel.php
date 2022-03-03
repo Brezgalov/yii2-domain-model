@@ -12,14 +12,6 @@ interface IDomainActionModel
     public function __construct(IDomainModel $model, $config = []);
 
     /**
-     * Pass input to model
-     *
-     * @param array $data
-     * @return bool|void
-     */
-    public function registerInput(array $data = []);
-
-    /**
      * @return mixed
      */
     public function run();

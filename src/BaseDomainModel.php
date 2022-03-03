@@ -16,7 +16,7 @@ use yii\helpers\ArrayHelper;
  * Provides DelayedEventStorage wrapping
  * @package Brezgalov\DomainModel
  */
-abstract class BaseDomainModel extends Model implements IDomainModel
+abstract class BaseDomainModel extends Model implements IDomainModel, IRegisterInputInterface
 {
     /**
      * @var bool
@@ -135,7 +135,10 @@ abstract class BaseDomainModel extends Model implements IDomainModel
         }
 
         if ($action instanceof IDomainActionModel) {
-            $action->registerInput(array_merge($this->input, $input));
+            if ($action instanceof IRegisterInputInterface) {
+                $action->registerInput(array_merge($this->input, $input));
+            }
+
             return $action->run();
         }
 
@@ -236,7 +239,10 @@ abstract class BaseDomainModel extends Model implements IDomainModel
              */
             $modelConfig = clone $modelConfig;
 
-            $modelConfig->registerInput($input);
+            if ($modelConfig instanceof IRegisterInputInterface) {
+                $modelConfig->registerInput($input);
+            }
+
             $modelConfig = $modelConfig->getDomainModel();
         }
 

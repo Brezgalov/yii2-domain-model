@@ -37,12 +37,6 @@ interface IDomainModel
     public function crossDomainActionsAllowed();
 
     /**
-     * @param array $data
-     * @return void
-     */
-    public function registerInput(array $data = []);
-
-    /**
      * @param $originDMClass
      * @return bool
      */

@@ -5,7 +5,7 @@ namespace Brezgalov\DomainModel;
 use Brezgalov\DomainModel\Exceptions\ErrorException;
 use yii\base\Model;
 
-abstract class BaseDomainActionModel extends Model implements IDomainActionModel
+abstract class BaseDomainActionModel extends Model implements IDomainActionModel, IRegisterInputInterface
 {
     /**
      * @var IDomainModel

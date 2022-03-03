@@ -3,6 +3,7 @@
 namespace Brezgalov\DomainModel\Services\Traits;
 
 use Brezgalov\DomainModel\Events\AfterFlushEvent;
+use Brezgalov\DomainModel\IRegisterInputInterface;
 use yii\base\InvalidCallException;
 use Brezgalov\DomainModel\IDomainModel;
 use Brezgalov\DomainModel\IDomainModelRepository;
@@ -76,13 +77,18 @@ trait ServiceTrait
                 throw new InvalidCallException('Model ' . get_class($model) . ' can not be loaded without Repo');
             }
 
-            $model->registerInput($input);
+            if ($model instanceof IRegisterInputInterface) {
+                $model->registerInput($input);
+            }
 
             return $model;
         }
 
         $repo = $this->getDomainModelRepository();
-        $repo->registerInput($input);
+
+        if ($repo instanceof IRegisterInputInterface) {
+            $repo->registerInput($input);
+        }
 
         return $repo->getDomainModel();
     }
