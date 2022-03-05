@@ -137,6 +137,11 @@ trait ServiceTrait
      */
     public function handleAction()
     {
+        $afterFlushEvent = $this->afterFlushEvent;
+        if ($afterFlushEvent && (is_string($afterFlushEvent) || is_array($afterFlushEvent))) {
+            $afterFlushEvent = \Yii::createObject($afterFlushEvent);
+        }
+
         $unitOfWork = null;
         $model = null;
 
@@ -145,6 +150,13 @@ trait ServiceTrait
 
             if (empty($model)) {
                 if ($this->emptyModelAllowed) {
+                    if ($afterFlushEvent instanceof AfterFlushEvent) {
+                        $afterFlushEvent
+                            ->setModel(null)
+                            ->setInput($this->getInput())
+                            ->run();
+                    }
+
                     return $this->formatResult(null, null);
                 }
 
@@ -166,11 +178,6 @@ trait ServiceTrait
             if ($result === false) {
                 $unitOfWork->die($model);
             } else {
-                $afterFlushEvent = $this->afterFlushEvent;
-                if ($afterFlushEvent && (is_string($afterFlushEvent) || is_array($afterFlushEvent))) {
-                    $afterFlushEvent = \Yii::createObject($afterFlushEvent);
-                }
-
                 $unitOfWork->flush($model);
 
                 if ($afterFlushEvent instanceof AfterFlushEvent) {
