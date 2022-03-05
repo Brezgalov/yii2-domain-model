@@ -133,15 +133,28 @@ trait ServiceTrait
     }
 
     /**
-     * @return \Exception|false|mixed|void
+     * @param IDomainModel|null $model
      */
-    public function handleAction()
+    protected function callAfterFlushEvent(IDomainModel $model = null)
     {
         $afterFlushEvent = $this->afterFlushEvent;
         if ($afterFlushEvent && (is_string($afterFlushEvent) || is_array($afterFlushEvent))) {
             $afterFlushEvent = \Yii::createObject($afterFlushEvent);
         }
 
+        if ($afterFlushEvent instanceof AfterFlushEvent) {
+            $afterFlushEvent
+                ->setModel($model)
+                ->setInput($this->getInput())
+                ->run();
+        }
+    }
+
+    /**
+     * @return \Exception|false|mixed|void
+     */
+    public function handleAction()
+    {
         $unitOfWork = null;
         $model = null;
 
@@ -150,12 +163,7 @@ trait ServiceTrait
 
             if (empty($model)) {
                 if ($this->emptyModelAllowed) {
-                    if ($afterFlushEvent instanceof AfterFlushEvent) {
-                        $afterFlushEvent
-                            ->setModel(null)
-                            ->setInput($this->getInput())
-                            ->run();
-                    }
+                    $this->callAfterFlushEvent();
 
                     return $this->formatResult(null, null);
                 }
@@ -180,12 +188,7 @@ trait ServiceTrait
             } else {
                 $unitOfWork->flush($model);
 
-                if ($afterFlushEvent instanceof AfterFlushEvent) {
-                    $afterFlushEvent
-                        ->setModel($model)
-                        ->setInput($this->getInput())
-                        ->run();
-                }
+                $this->callAfterFlushEvent($model);
             }
         } catch (\Exception $ex) {
             $result = $ex;
