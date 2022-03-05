@@ -143,8 +143,11 @@ trait ServiceTrait
         }
 
         if ($afterFlushEvent instanceof AfterFlushEvent) {
+            if ($model) {
+                $afterFlushEvent->setModel($model);
+            }
+
             $afterFlushEvent
-                ->setModel($model)
                 ->setInput($this->getInput())
                 ->run();
         }
